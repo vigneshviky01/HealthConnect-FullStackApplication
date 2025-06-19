@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
-import { NavLink, useNavigate } from "react-router-dom"
+import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import * as loginFunc from "./LoginFunction"
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const location = useLocation();
+     const from = location.state?.from?.pathname || "/dashboard";
     const submitHandler = (e) => {
         e.preventDefault();
         loginFunc.logUserIn({ email, password })
@@ -12,7 +14,7 @@ function Login() {
             .then(data => {
                 const { token } = data;
                 sessionStorage.setItem('authToken', token);
-                navigate('/home');//home navigation
+                navigate(from, { replace: true });  //dashboard navigation
             })
             .catch(err => {
                 console.error("Login failed:", err);

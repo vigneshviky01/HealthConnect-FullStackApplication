@@ -29,6 +29,22 @@ export default function Register() {
             newErrors.confirmPassword = "Passwords do not match";
         }
 
+         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+       newErrors.email = "Please enter a valid email address";
+      }
+      const age = parseInt(formData.age);
+      if (age < 13 || age > 120) {
+        newErrors.age = "Age must be between 13 and 120";
+      }
+const height = parseInt(formData.height);
+      if (height < 50 || height > 300) {
+        newErrors.height = "Height must be between 50 and 300 cm";
+      }
+      const weight = parseInt(formData.weight);
+      if (weight < 20 || weight > 500) {
+       newErrors.weight = "Weight must be between 20 and 500 kg";
+      }
         setErrors(newErrors);
 
         // Return true if no errors
@@ -41,7 +57,7 @@ export default function Register() {
             try {
                 const response = await registerFunc.registerUser(formData);
                 console.log(formData);
-                navigate("/");
+                navigate("/login");
             } catch (error) {
                 console.error("Registration failed:", error);
 
@@ -187,7 +203,7 @@ export default function Register() {
 
                 <p className="text-center text-sm text-[#0066EE] mt-6">
                     Already have an account?{" "}
-                    <NavLink to="/" className="font-semibold underline hover:text-[#0055cc]">
+                    <NavLink to="/login" className="font-semibold underline hover:text-[#0055cc]">
                         Login here
                     </NavLink>
                 </p>
