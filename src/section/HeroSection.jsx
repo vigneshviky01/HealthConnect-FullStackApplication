@@ -3,7 +3,7 @@ import React from 'react';
 
 const HeroSection = () => {
   return (
-    <section className="bg-gradient-to-b from-blue-600 to-blue-500 text-white py-16 px-6">
+    <section className="bg-gradient-to-b from-blue-600 to-blue-500 text-white py-16 px-20">
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between">
         
         <div className="text-center lg:text-left lg:max-w-xl">
@@ -24,9 +24,9 @@ const HeroSection = () => {
 
         <div className="mt-10 lg:mt-0">
           <img
-            src="https://i.ibb.co/zGtPy7X/health-dashboard.png"
+            src="/images/heroImg.png"
             alt="Health Dashboard"
-            className="w-80 md:w-96 rounded-xl shadow-lg"
+            className="w-80 md:w-96 "
           />
         </div>
       </div>
