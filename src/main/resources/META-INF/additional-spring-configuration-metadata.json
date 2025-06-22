@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "healthconnect.app.jwtSecret",
+    "type": "java.lang.String",
+    "description": "A description for 'healthconnect.app.jwtSecret'"
+  },
+  {
+    "name": "healthconnect.app.jwtExpirationMs",
+    "type": "java.lang.String",
+    "description": "A description for 'healthconnect.app.jwtExpirationMs'"
+  },
+  {
+    "name": "healthconnect.app.jwtExpirationMs",
+    "type": "java.lang.String",
+    "description": "A description for 'healthconnect.app.jwtExpirationMs'"
+  }
+]}
