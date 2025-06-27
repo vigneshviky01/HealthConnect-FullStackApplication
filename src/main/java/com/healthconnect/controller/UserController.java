@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.healthconnect.config.service.UserDetailsImpl;
 import com.healthconnect.entity.User;
+import com.healthconnect.entity.UserProfile;
 import com.healthconnect.service.UserService;
+import com.healthconnect.transfer.request.ProfileUpdateRequest;
 import com.healthconnect.transfer.response.MessageResponse;
+import com.healthconnect.transfer.response.UserProfileResponse;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -37,8 +39,13 @@ public class UserController {
 
 		if (userOptional.isPresent()) {
 			User user = userOptional.get();
-			user.setPassword(null); // not returning the password in response
-			return ResponseEntity.ok(user);
+
+			Optional<UserProfile> profileOptional = userService.getUserProfile(user);
+			UserProfile profile = profileOptional.orElse(null);
+			UserProfileResponse response = UserProfileResponse.fromUser_Profile(user.getId(), user.getEmail(),
+					user.getUsername(), profile);
+
+			return ResponseEntity.ok(response);
 		} else {
 			return ResponseEntity.notFound().build();
 		}
@@ -46,15 +53,24 @@ public class UserController {
 
 	@PutMapping("/profile")
 	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<?> updateUserProfile(@RequestBody User userUpdates) {
+	public ResponseEntity<?> updateUserProfile(@RequestBody ProfileUpdateRequest profileUpdateRequest) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
 		try {
-			User updateUser = userService.updateUser(userDetails.getId(), userUpdates);
+			UserProfile updateProfile = new UserProfile();
+			updateProfile.setName(profileUpdateRequest.getFullName());
+			updateProfile.setGender(profileUpdateRequest.getGender());
+			updateProfile.setAge(profileUpdateRequest.getAge());
+			updateProfile.setWeight(profileUpdateRequest.getWeight());
+			updateProfile.setHeight(profileUpdateRequest.getHeight());
+			
+			UserProfile updatedProfile = userService.updateUserProfile(userDetails.getId(), updateProfile);
+			User user = userService.getUserById(userDetails.getId()).orElseThrow();
+			
+			UserProfileResponse response = UserProfileResponse.fromUser_Profile(user.getId(), user.getEmail(), user.getUsername(), updatedProfile);
 
-			updateUser.setPassword(null);
-			return ResponseEntity.ok(updateUser);
+			return ResponseEntity.ok(response);
 		} catch (RuntimeException e) {
 			return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
 		}

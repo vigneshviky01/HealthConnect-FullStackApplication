@@ -19,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -59,18 +58,7 @@ public class AuthController {
 			return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
 		}
 
-		// Create new user's account
-		User user = new User();
-		user.setUsername(signupRequest.getUsername());
-		user.setEmail(signupRequest.getEmail());
-		user.setPassword(signupRequest.getPassword()); // Will be encoded in service
-		user.setName(signupRequest.getName());
-		user.setGender(signupRequest.getGender());
-		user.setAge(signupRequest.getAge());
-		user.setWeight(signupRequest.getWeight());
-		user.setHeight(signupRequest.getHeight());
-
-		userService.registerUser(user);
+		userService.registerUser(signupRequest);
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}

@@ -9,13 +9,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.healthconnect.entity.User;
+import com.healthconnect.entity.UserProfile;
+import com.healthconnect.repository.UserProfileRepository;
 import com.healthconnect.repository.UserRepository;
+import com.healthconnect.transfer.request.SignupRequest;
 
 @Service
 public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private UserProfileRepository userProfileRepository;
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
@@ -44,38 +51,61 @@ public class UserService {
 	}
 
 	@Transactional
-	public User registerUser(User user) {
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		return userRepository.save(user);
+	public User registerUser(SignupRequest signupRequest) {
+		User user = new User();
+		user.setUsername(signupRequest.getUsername());
+		user.setEmail(signupRequest.getEmail());
+		user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+		User newUser = userRepository.save(user);
+
+		UserProfile profile = new UserProfile();
+		profile.setUser(newUser);
+		profile.setName(signupRequest.getName());
+		profile.setGender(signupRequest.getGender());
+		profile.setAge(signupRequest.getAge());
+		profile.setWeight(signupRequest.getWeight());
+		profile.setHeight(signupRequest.getHeight());
+		userProfileRepository.save(profile);
+
+		user.setUserProfile(profile);
+		return newUser;
 	}
 
 	@Transactional
-	public User updateUser(Long id, User user) {
+	public UserProfile updateUserProfile(Long id, UserProfile userProfile) {
 		User newUser = userRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
-		if (user.getName() != null && !user.getName().isEmpty()) {
-			newUser.setName(user.getName());
-		}
-		if (user.getGender() != null) {
-			newUser.setGender(user.getGender());
-		}
-		if (user.getAge() != null) {
-			newUser.setAge(user.getAge());
-		}
-		if (user.getWeight() != null) {
-			newUser.setWeight(user.getWeight());
-		}
-		if (user.getHeight() != null) {
-			newUser.setHeight(user.getHeight());
-		}
+		UserProfile newProfile = userProfileRepository.findByUser(newUser)
+				.orElseThrow(() -> new RuntimeException("Profile not found with id: " + id));
 
-		return userRepository.save(newUser);
+		if (userProfile.getName() != null && !userProfile.getName().isEmpty())
+			newProfile.setName(userProfile.getName());
+		if (userProfile.getGender() != null)
+			newProfile.setGender(userProfile.getGender());
+		if (userProfile.getAge() != null)
+			newProfile.setAge(userProfile.getAge());
+		if(userProfile.getWeight() != null)
+			newProfile.setWeight(userProfile.getWeight());
+		if(userProfile.getHeight() != null)
+			newProfile.setHeight(userProfile.getHeight());
+
+		return userProfileRepository.save(newProfile);
 	}
 
+	// The UserProfile will be automatically deleted due to CascadeType.ALL and orphanRemoval=true
 	@Transactional
 	public void deleteUser(Long id) {
 		userRepository.deleteById(id);
 	}
+	
+	public Optional<UserProfile> getUserProfileByUserId(Long userId) {
+		return userProfileRepository.findByUserId(userId);
+	}
+	
+	public Optional<UserProfile> getUserProfile(User user) {
+		return userProfileRepository.findByUser(user);
+	}
+
 
 }
