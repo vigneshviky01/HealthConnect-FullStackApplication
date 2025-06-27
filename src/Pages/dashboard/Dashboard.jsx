@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Navbar from "../section/Navbar";
-import { useUser } from "../context/UserContext";
-import Welcome from "../section/dashboard/Welcome";
+import Navbar from "../../section/Navbar";
+import { useUser } from "../../context/UserContext";
+import Welcome from "../../section/dashboard/Welcome";
+import DashboardNav from "../../section/dashboard/DashboardNav";
 
 const Dashboard = () => {
   const { userInfo, setUserInfo } = useUser();
@@ -23,11 +24,8 @@ const Dashboard = () => {
 
   return (
     <>
-      <Navbar />
-      <div className="container mx-auto  space-y-8">
-
-     <Welcome />
-      </div>
+      <Welcome />
+      <DashboardNav />
     </>
   );
 };

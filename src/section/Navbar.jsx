@@ -33,7 +33,7 @@ const isLoggedIn = true; //change after
           isDashboard
             ? isScrolled
               ? "text-blue-600 hover:text-white hover:bg-blue-600"
-              : "text-white"
+              : "text-white hover:text-blue-600 hover:bg-white"
             : isScrolled
             ? "text-white hover:text-blue-600 hover:bg-white"
             : "text-white hover:text-blue-600 hover:bg-white"
