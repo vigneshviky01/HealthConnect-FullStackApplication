@@ -25,13 +25,18 @@ public class SleepService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public List<SleepResponse> getAllSleepRecords(Long userId, LocalDateTime start, LocalDateTime end, String sort) {
+	public List<SleepResponse> getAllSleepRecords(Long userId, LocalDateTime start, LocalDateTime end,
+			Integer qualityRating, String sort) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User is not found."));
 
 		List<Sleep> sleepRecords;
 
-		if (start != null && end != null) {
+		if (start != null && end != null && qualityRating != null) {
+			sleepRecords = sleepRepository.findByUserAndSleepStartTimeBetweenAndQualityRatingGreaterThanEqual(user, start, end, qualityRating);
+		} else if(start != null && end != null) {
 			sleepRecords = sleepRepository.findByUserAndSleepStartTimeBetween(user, start, end);
+		} else if (qualityRating != null) {
+			sleepRecords = sleepRepository.findByUserAndQualityRatingGreaterThanEqual(user, qualityRating);
 		} else {
 			sleepRecords = sleepRepository.findByUser(user);
 		}

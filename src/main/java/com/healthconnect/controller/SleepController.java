@@ -41,9 +41,10 @@ public class SleepController {
 	public ResponseEntity<List<SleepResponse>> getAllSleepRecord(
 			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime start,
 			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime end,
+			@RequestParam(required = false) Integer qualityRating,
 			@RequestParam(defaultValue = "desc") String sort){
 		Long userId = getCurrentUserId();
-		List<SleepResponse> sleepRecords = sleepService.getAllSleepRecords(userId, start, end, sort);
+		List<SleepResponse> sleepRecords = sleepService.getAllSleepRecords(userId, start, end, qualityRating, sort);
 		
 		return ResponseEntity.ok(sleepRecords);
 	}

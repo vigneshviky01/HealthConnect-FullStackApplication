@@ -11,4 +11,6 @@ import com.healthconnect.entity.User;
 public interface SleepRepository extends JpaRepository<Sleep, Long>{
 	List<Sleep> findByUser(User user);
 	List<Sleep> findByUserAndSleepStartTimeBetween(User user, LocalDateTime start, LocalDateTime end);
+	List<Sleep> findByUserAndQualityRatingGreaterThanEqual(User user, Integer qualityRating);
+	List<Sleep> findByUserAndSleepStartTimeBetweenAndQualityRatingGreaterThanEqual(User user, LocalDateTime start, LocalDateTime end, Integer qualityRating);
 }
