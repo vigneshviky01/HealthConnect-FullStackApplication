@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import * as registerFunc from "./RegisterFunction";
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -13,6 +15,7 @@ export default function Register() {
     height: "",
     weight: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
@@ -57,43 +60,44 @@ export default function Register() {
   };
 
   const submitHandler = async (e) => {
-  e.preventDefault();
-  if (validateForm()) {
-    try {
-      const {
-        confirmPassword,
-        age,
-        height,
-        weight,
-        ...rest
-      } = formData;
+    e.preventDefault();
+    if (loading) return;
+    if (validateForm()) {
+      setLoading(true);
+      try {
+        const { confirmPassword, ...cleanedFormData } = formData;
 
-      // Convert numeric fields to numbers
-      const cleanedFormData = {
-        ...rest,
-        age: Number(age),
-        height: Number(height),
-        weight: Number(weight),
-      };
+        console.log("Sending cleanedFormData:", cleanedFormData);
 
-      console.log("Sending cleanedFormData:", cleanedFormData);
+        const response = await registerFunc.registerUser(cleanedFormData);
 
-      const response = await registerFunc.registerUser(cleanedFormData);
-      navigate("/login");
-    } catch (error) {
-      if (error.response?.data?.message?.includes("Username is already taken")) {
-        setErrors((prev) => ({ ...prev, username: "Username is already taken" }));
-      } else if (error.response?.data?.message?.includes("Email is already in use")) {
-        setErrors((prev) => ({ ...prev, email: "Email is already in use" }));
-      } else {
-        console.error("Registration failed:", error);
+        toast.success("Registered successfully!", { autoClose: 3000 });
+
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } catch (error) {
+        if (
+          error.response?.data?.message?.includes("Username is already taken")
+        ) {
+          setErrors((prev) => ({
+            ...prev,
+            username: "Username is already taken",
+          }));
+        } else if (
+          error.response?.data?.message?.includes("Email is already in use")
+        ) {
+          setErrors((prev) => ({ ...prev, email: "Email is already in use" }));
+        } else {
+          toast.error("Registration failed", { autoClose: 2000 });
+          console.error("Registration failed:", error);
+        }
+        setLoading(false);
       }
+    } else {
+      console.warn("Validation failed");
     }
-  } else {
-    console.warn("Validation failed");
-  }
-};
-
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -292,9 +296,14 @@ export default function Register() {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full py-2 sm:px-4 sm:py-3 rounded-lg bg-[#0066EE] hover:bg-[#0055cc] text-sm sm:text-base text-white font-semibold transition mt-2"
+            disabled={loading}
+            className={`w-full py-2 sm:px-4 sm:py-3 rounded-lg font-semibold transition mt-2 ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-[#0066EE] hover:bg-[#0055cc] text-white"
+            }`}
           >
-            Register
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
