@@ -1,29 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import DashboardSectionTemplate from "../../layout/DashboardSectionTemplate";
 import BackButton from "../../component/BackButton";
 import ActivityForm from "../../component/dashboard/ActivityForm";
 import ActivityChart from "../../component/dashboard/ActivityChart";
+import ActivitySectionTemplate from "../../layout/ActivitySectionTemplate";
 
 const ActivityTracker = () => {
   const token = sessionStorage.getItem("authToken");
-
-  const [formData, setFormData] = useState({
-    type: "",
-    steps: "",
-    calories: "",
-    duration: "",
-  });
-
-  const [activityLogs, setActivityLogs] = useState([]);
+  const [activityLogs, setActivityLogs] = useState([]);//for previous activity
   const [loading, setLoading] = useState(true);
+  const today = new Date().toISOString().slice(0, 10);
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
+  //fetch all the previous activities
   const fetchActivities = async () => {
     try {
-      const res = await axios.get("http://localhost:5055/activities", {
+      const res = await axios.get(`http://localhost:5055/activities/${today}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setActivityLogs(res.data);
@@ -34,39 +25,30 @@ const ActivityTracker = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post("http://localhost:5055/activities", formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setFormData({ type: "", steps: "", calories: "", duration: "" });
-      fetchActivities();
-    } catch (err) {
-      console.error("Error logging activity", err);
-    }
-  };
-
   useEffect(() => {
     fetchActivities();
   }, []);
 
+  //for test
+    const chartData = [
+  { id: 1, date: "2025-06-28", name: "Running", steps: 5000, calories: 300, duration: "30 min" },
+  { id: 2, date: "2025-06-28", name: "Walking", steps: 3000, calories: 150, duration: "20 min" },
+  { id: 3, date: "2025-06-27", name: "Cycling", steps: 8000, calories: 400, duration: "45 min" },
+  { id: 4, date: "2025-06-26", name: "Swimming", steps: 0, calories: 350, duration: "40 min" },
+  { id: 5, date: "2025-06-30", name: "Swimming", steps: 0, calories: 350, duration: "30 min" },
+  { id: 6, date: "2025-06-30", name: "Swimming", steps: 0, calories: 350, duration: "30 min" },
+];
+
+
   return (
     <>
       <BackButton />
-      <DashboardSectionTemplate
+      <ActivitySectionTemplate
         title="Daily Activity Tracker"
-        onSubmit={handleSubmit}
-        form={<ActivityForm formData={formData} onChange={handleChange} />}
-        records={activityLogs.map((act, idx) => (
-          <div key={idx}>
-            <strong>{act.type}</strong> - {act.steps} steps, {act.calories} cal, {act.duration} mins
-            <div className="text-gray-500 text-sm">
-              {new Date(act.date).toLocaleDateString()}
-            </div>
-          </div>
-        ))}
-        chart={<ActivityChart data={activityLogs} />}
+        formComponent={ActivityForm}
+        chart={<ActivityChart data={chartData} />} //data={activityLogs}
+        records={chartData}//activityLogs
+        refreshData={fetchActivities}
         loading={loading}
       />
     </>
