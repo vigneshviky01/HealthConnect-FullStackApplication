@@ -16,11 +16,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.2",
-<<<<<<< HEAD
     "react-toastify": "^11.0.5",
-=======
     "recharts": "^3.0.2",
->>>>>>> bcc2d46fd2ddb65edacf47d77ff07542235e7ed5
     "tailwindcss": "^4.1.10"
   },
   "devDependencies": {
