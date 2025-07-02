@@ -17,7 +17,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -61,5 +64,19 @@ public class AuthController {
 		userService.registerUser(signupRequest);
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+	}
+	
+	@PostMapping("/logout")
+	public ResponseEntity<?> logoutUser(HttpServletRequest request) {
+		String headerAuth = request.getHeader("Authorization");
+		
+		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+			String jwt = headerAuth.substring(7);
+			// Invalidate the token
+			jwtUtils.invalidateToken(jwt);
+		}
+		SecurityContextHolder.clearContext();
+		
+		return ResponseEntity.ok(new MessageResponse("Logged out successfully!"));
 	}
 }

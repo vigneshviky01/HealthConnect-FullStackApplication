@@ -31,6 +31,9 @@ public class JwtUtils {
 	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private TokenBlacklistService tokenBlacklistService;
 
 	@Value("${healthconnect.app.jwtSecret}")
 	private String jwtSecret;
@@ -76,6 +79,12 @@ public class JwtUtils {
 	}
 
 	public boolean validateJwtToken(String authToken) {
+		// First check if token is blacklisted
+		if (tokenBlacklistService.isBlacklisted(authToken)) {
+			logger.error("JWT token is blacklisted");
+			return false;
+		}
+		
 		try {
 			Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(authToken);
 			return true;
@@ -90,6 +99,11 @@ public class JwtUtils {
 		}
 
 		return false;
+	}
+	
+	public void invalidateToken(String token) {
+		tokenBlacklistService.blacklistToken(token);
+		logger.info("JWT token has been blacklisted");
 	}
 
 }
