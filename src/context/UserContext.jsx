@@ -1,10 +1,7 @@
-// src/context/UserContext.js
 import { createContext, useContext, useState } from "react";
 
-// 1. Create the context
 const UserContext = createContext();
 
-// 2. Create a provider component
 export const UserProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
 
@@ -15,5 +12,4 @@ export const UserProvider = ({ children }) => {
   );
 };
 
-// 3. Create a custom hook for easy access
 export const useUser = () => useContext(UserContext);

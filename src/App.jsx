@@ -11,15 +11,18 @@ import SleepTracker from "./Pages/dashboard/SleepTracker";
 import WaterTracker from "./Pages/dashboard/WaterTracker";
 import ActivityTracker from "./Pages/dashboard/ActivityTracker";
 import MoodTracker from "./Pages/dashboard/MoodTracker";
-
+import { PrivateRoute } from "./component/LoginRoutes";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     <>
+    <ToastContainer />
       <BrowserRouter>
         <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route exact path="/profile" element={<Profile />} />
-          <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route  path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
             <Route index element={<Dashboard />} /> {/* /dashboard */}
             <Route path="activity" element={<ActivityTracker />} />
             <Route path="sleep" element={<SleepTracker />} />

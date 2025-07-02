@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Pencil, Check, X, User } from "lucide-react";
 import { useUser } from "../context/UserContext";
-
+import { useNavigate } from "react-router-dom";
 // Move EditableField outside the main component to prevent recreation
-const EditableField = ({ 
-  label, 
-  keyName, 
-  editable = true, 
+const EditableField = ({
+  label,
+  keyName,
+  editable = true,
   type = "text",
   userInfo,
   editingKey,
@@ -17,10 +17,12 @@ const EditableField = ({
   handleCancel,
   loading,
   inputRef,
-  setEditingKey
+  setEditingKey,
 }) => (
   <div className="mb-6">
-    <label className="block mb-2 text-sm text-[#0066EE] font-medium">{label}</label>
+    <label className="block mb-2 text-sm text-[#0066EE] font-medium">
+      {label}
+    </label>
     {editingKey === keyName ? (
       <div className="space-y-2">
         <div className="flex items-center gap-2">
@@ -30,7 +32,7 @@ const EditableField = ({
               value={editedValue}
               onChange={(e) => setEditedValue(e.target.value)}
               className={`flex-1 px-4 py-3 rounded-lg border ${
-                errors[keyName] ? 'border-red-500' : 'border-[#0066EE]'
+                errors[keyName] ? "border-red-500" : "border-[#0066EE]"
               } text-[#0066EE] bg-white focus:outline-none focus:ring-2 focus:ring-[#0066EE]/20`}
             >
               <option value="">Select</option>
@@ -45,7 +47,7 @@ const EditableField = ({
               value={editedValue}
               onChange={(e) => setEditedValue(e.target.value)}
               className={`flex-1 px-4 py-3 rounded-lg border ${
-                errors[keyName] ? 'border-red-500' : 'border-[#0066EE]'
+                errors[keyName] ? "border-red-500" : "border-[#0066EE]"
               } text-[#0066EE] placeholder-[#0066EE]/70 focus:outline-none focus:ring-2 focus:ring-[#0066EE]/20`}
               placeholder={`Enter your ${label.toLowerCase()}`}
             />
@@ -97,27 +99,27 @@ const EditableField = ({
 );
 
 export default function Profile() {
-    // const { userInfo, setUserInfo } = useUser();
-  // Mock user data for demonstration - replace with your actual useUser hook
-  const [userInfo, setUserInfo] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    age: "28",
-    gender: "Male",
-    height: "175",
-    weight: "70"
-  });
+  const { userInfo, setUserInfo } = useUser();
+  const navigate = useNavigate();
+
   const [editingKey, setEditingKey] = useState(null);
   const [editedValue, setEditedValue] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [token, setToken] = useState(null);
+  const token = sessionStorage.getItem("authToken");
+
   const inputRef = useRef(null);
 
-  // Get token once on component mount
   useEffect(() => {
-    setToken(sessionStorage.getItem("authToken"));
-  }, []);
+    if (!userInfo && token) {
+      fetch("http://localhost:8080/api/users/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => setUserInfo(data))
+        .catch((err) => console.error("Profile fetch error", err));
+    }
+  }, [userInfo, token]);
 
   useEffect(() => {
     if (editingKey && inputRef.current) {
@@ -127,7 +129,7 @@ export default function Profile() {
 
   const validateField = (key, value) => {
     let error = "";
-    
+
     if (!value.trim()) {
       error = "This field is required";
     } else if (key === "email") {
@@ -151,7 +153,7 @@ export default function Profile() {
         error = "Weight must be between 20 and 500 kg";
       }
     }
-    
+
     return error;
   };
 
@@ -169,20 +171,37 @@ export default function Profile() {
     }
 
     setLoading(true);
-    try {
-      const response = await fetch(`http://localhost:5055/user/${editingKey}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ [editingKey]: editedValue })
-      });
 
-      if (!response.ok) {
-        throw new Error('Failed to update');
+    try {
+      const updatedFields = {
+        fullName: userInfo.name,
+        gender: userInfo.gender,
+        age: userInfo.age,
+        weight: userInfo.weight,
+        height: userInfo.height,
+      };
+
+      // Now update the right field
+      if (editingKey === "name") {
+        updatedFields.fullName = editedValue;
+      } else {
+        updatedFields[editingKey] = editedValue;
       }
 
+      const response = await fetch(`http://localhost:8080/api/users/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedFields),
+      });
+
+      if (!response.ok) throw new Error("Failed to update");
+
+      console.log("updated!!");
+
+      // Update local UI state
       setUserInfo((prev) => ({ ...prev, [editingKey]: editedValue }));
       setEditingKey(null);
       setEditedValue("");
@@ -201,7 +220,13 @@ export default function Profile() {
     setErrors({});
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem("authToken"); // Remove token
+    setUserInfo(null); // Clear context
+    navigate("/login",{ replace: true }); // Redirect to login page
+  };
 
+  console.log(userInfo);
 
   if (!userInfo) {
     return (
@@ -217,20 +242,25 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-[linear-gradient(200deg,_#0066EE_60%,_#9383FB_100%)]">
+    <div className="py-10 min-h-screen flex items-center justify-center px-4 bg-[linear-gradient(200deg,_#0066EE_60%,_#9383FB_100%)]">
       <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-md mt-6 sm:mt-12">
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-[#0066EE]/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <User size={32} className="text-[#0066EE]" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-[#0066EE]">Your Profile</h2>
-          <p className="text-gray-600 text-sm mt-1">Manage your personal information</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#0066EE]">
+            Your Profile
+          </h2>
+          <p className="text-gray-600 text-sm mt-1">
+            Manage your personal information
+          </p>
         </div>
 
         <div className="space-y-4">
-          <EditableField 
-            label="Full Name" 
-            keyName="name" 
+          <EditableField
+            label="Username"
+            keyName="username"
+            editable={false}
             userInfo={userInfo}
             editingKey={editingKey}
             editedValue={editedValue}
@@ -242,10 +272,9 @@ export default function Profile() {
             inputRef={inputRef}
             setEditingKey={setEditingKey}
           />
-          <EditableField 
-            label="Email" 
-            keyName="email" 
-            editable={false} 
+          <EditableField
+            label="Full Name"
+            keyName="name"
             userInfo={userInfo}
             editingKey={editingKey}
             editedValue={editedValue}
@@ -257,10 +286,10 @@ export default function Profile() {
             inputRef={inputRef}
             setEditingKey={setEditingKey}
           />
-          <EditableField 
-            label="Age" 
-            keyName="age" 
-            type="number" 
+          <EditableField
+            label="Email"
+            keyName="email"
+            editable={false}
             userInfo={userInfo}
             editingKey={editingKey}
             editedValue={editedValue}
@@ -272,9 +301,10 @@ export default function Profile() {
             inputRef={inputRef}
             setEditingKey={setEditingKey}
           />
-          <EditableField 
-            label="Gender" 
-            keyName="gender" 
+          <EditableField
+            label="Age"
+            keyName="age"
+            type="number"
             userInfo={userInfo}
             editingKey={editingKey}
             editedValue={editedValue}
@@ -286,10 +316,9 @@ export default function Profile() {
             inputRef={inputRef}
             setEditingKey={setEditingKey}
           />
-          <EditableField 
-            label="Height" 
-            keyName="height" 
-            type="number" 
+          <EditableField
+            label="Gender"
+            keyName="gender"
             userInfo={userInfo}
             editingKey={editingKey}
             editedValue={editedValue}
@@ -301,10 +330,25 @@ export default function Profile() {
             inputRef={inputRef}
             setEditingKey={setEditingKey}
           />
-          <EditableField 
-            label="Weight" 
-            keyName="weight" 
-            type="number" 
+          <EditableField
+            label="Height"
+            keyName="height"
+            type="number"
+            userInfo={userInfo}
+            editingKey={editingKey}
+            editedValue={editedValue}
+            setEditedValue={setEditedValue}
+            errors={errors}
+            handleSave={handleSave}
+            handleCancel={handleCancel}
+            loading={loading}
+            inputRef={inputRef}
+            setEditingKey={setEditingKey}
+          />
+          <EditableField
+            label="Weight"
+            keyName="weight"
+            type="number"
             userInfo={userInfo}
             editingKey={editingKey}
             editedValue={editedValue}
@@ -320,8 +364,17 @@ export default function Profile() {
 
         <div className="mt-8 p-4 bg-blue-50 rounded-lg">
           <p className="text-xs text-gray-600 text-center">
-            Click the pencil icon to edit any field. Your changes will be saved automatically.
+            Click the pencil icon to edit any field. Your changes will be saved
+            automatically.
           </p>
+        </div>
+        <div className="mt-6 text-center">
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 cursor-pointer align-middle bg-red-500 text-white rounded-full hover:bg-red-600 transition-all duration-300"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </div>

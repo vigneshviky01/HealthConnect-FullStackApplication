@@ -9,22 +9,24 @@ const Dashboard = () => {
   const { userInfo, setUserInfo } = useUser();
 
   const token = sessionStorage.getItem("authToken");
-  //      useEffect(() => {
-  //     axios
-  //       .get("http://localhost:5055/user/profile", {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       })
-  //       .then((res) => setUserInfo(res.data))
-  //       .catch((err) => console.error("Failed to fetch user data", err));
-  //   }, []);
+  console.log(token);
+       useEffect(() => {
+      axios
+        .get("http://localhost:8080/api/users/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => setUserInfo(res.data))
+        .catch((err) => console.error("Failed to fetch user data", err));
+    }, []);
+    console.log(userInfo);
 
-  //   if (!userInfo) {
-  //     return <div className="text-center mt-20">Loading user info...</div>;
-  //   }
+    if (!userInfo) {
+      return <div className="text-center mt-20">Loading user info...</div>;
+    }
 
   return (
     <>
-      <Welcome />
+      <Welcome name={userInfo.name} />
       <DashboardNav />
     </>
   );

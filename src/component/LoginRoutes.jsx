@@ -1,39 +1,35 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+
 export const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem('authToken');
-  const [isValid, setIsValid] = useState(null); // null = loading
+  const token = sessionStorage.getItem('authToken'); 
+  const [isValid, setIsValid] = useState(null); 
   const location = useLocation();
 
   useEffect(() => {
-      const verifyToken = async () => {
-      try {
-        const res = await axios.get(`http://localhost:5000/user`, {
-          params: { secret_token: token }
-        });
-
-        if (res.data === true) {
-          setIsValid(true);
-        } else {
-          setIsValid(false);
-        }
-      } catch (error) {
-        console.error('Token validation error:', error);
+    const verifyToken = async () => {
+      if (!token) {
         setIsValid(false);
+        return;
+      }
+
+      try {
+        await axios.get("http://localhost:8080/api/users/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setIsValid(true); 
+      } catch (error) {
+        console.error("Token validation error:", error);
+        setIsValid(false); 
       }
     };
 
-    if (token) {
-      // verifyToken();
-      setIsValid(true);
-    } else {
-      setIsValid(false);
-    }
+    verifyToken();
   }, [token]);
 
   if (isValid === null) return <p>Loading...</p>;
-  if (!isValid) return <Navigate to="/" state={{ from: location }} replace />;
+  if (!isValid) return <Navigate to="/login" state={{ from: location }} replace />;
 
   return children;
 };
