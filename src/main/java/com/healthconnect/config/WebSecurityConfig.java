@@ -71,6 +71,7 @@ public class WebSecurityConfig {
 						// Private endpoints
 						.requestMatchers("/api/users/**").authenticated()
 						.requestMatchers("/api/sleep/**").authenticated()
+						.requestMatchers("/api/activities**").authenticated()
 						
 						//Default
 						.anyRequest().authenticated());
