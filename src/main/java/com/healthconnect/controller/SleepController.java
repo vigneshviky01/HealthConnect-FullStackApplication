@@ -1,5 +1,6 @@
 package com.healthconnect.controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -46,6 +47,18 @@ public class SleepController {
 		Long userId = getCurrentUserId();
 		List<SleepResponse> sleepRecords = sleepService.getAllSleepRecords(userId, start, end, qualityRating, sort);
 		
+		return ResponseEntity.ok(sleepRecords);
+	}
+
+	// Get sleep records for a specific date
+	@GetMapping("/by-date")
+	@PreAuthorize("isAuthenticated")
+	public ResponseEntity<List<SleepResponse>> getSleepRecordsByDate(
+			@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate date,
+			@RequestParam(defaultValue = "desc") String sort) {
+		LocalDate queryDate = (date != null) ? date : LocalDate.now();
+		Long userId = getCurrentUserId();
+		List<SleepResponse> sleepRecords = sleepService.getSleepRecordsByDate(userId, queryDate, sort);
 		return ResponseEntity.ok(sleepRecords);
 	}
 	

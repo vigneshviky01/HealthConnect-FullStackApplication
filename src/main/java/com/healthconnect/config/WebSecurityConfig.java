@@ -67,11 +67,17 @@ public class WebSecurityConfig {
 						// Public endpoints
 						.requestMatchers("/api/auth/**").permitAll()
 						.requestMatchers("/api/test/**").permitAll()
+						.requestMatchers("/swagger-ui.html",
+			                    "/swagger-ui/**",
+			                    "/v3/api-docs/**",
+			                    "/v2/api-docs",
+			                    "/swagger-resources/**",
+			                    "/webjars/**").permitAll()
 						
 						// Private endpoints
 						.requestMatchers("/api/users/**").authenticated()
 						.requestMatchers("/api/sleep/**").authenticated()
-						.requestMatchers("/api/activities**").authenticated()
+						.requestMatchers("/api/activities/**").authenticated()
 						
 						//Default
 						.anyRequest().authenticated());

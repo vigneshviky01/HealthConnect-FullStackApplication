@@ -54,6 +54,22 @@ public class ActivityService {
                 .collect(Collectors.toList());
     }
     
+	public List<ActivityResponse> getActivitiesByDate(Long userId, LocalDate date, String sort) {
+		User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+		
+		List<Activity> activities = activityRepository.findByUserAndActivityDate(user, date);
+		
+		String direction = (sort == null || !sort.equalsIgnoreCase("asc")) ? "desc" : "asc";
+        activities.sort((a, b) -> {
+            int compare = a.getActivityDate().compareTo(b.getActivityDate());
+            return direction.equals("asc") ? compare : -compare;
+        });
+        
+        return activities.stream()
+                .map(ActivityResponse::fromActivity)
+                .collect(Collectors.toList());
+	}
+	
     // Get a specific activity by ID
     public Optional<ActivityResponse> getActivityById(Long activityId, Long userId) {
         Optional<Activity> activityOpt = activityRepository.findById(activityId);

@@ -1,5 +1,6 @@
 package com.healthconnect.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,22 @@ public class SleepService {
 			return direction.equals("asc") ? compare : -compare;
 		});
 
+		return sleepRecords.stream().map(SleepResponse::sleepResponse).collect(Collectors.toList());
+	}
+	
+	public List<SleepResponse> getSleepRecordsByDate(Long userId, LocalDate date, String sort) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User is not found."));
+		
+		List<Sleep> sleepRecords = sleepRepository.findByUserAndDate(user, date);
+		
+		String direction = (sort == null || !sort.equalsIgnoreCase("asc")) ? "desc" : "asc";
+		
+		// Sort based on starting time of sleep
+		sleepRecords.sort((a, b) -> {
+			int compare = a.getSleepStartTime().compareTo(b.getSleepStartTime());
+			return direction.equals("asc") ? compare : -compare;
+		});
+		
 		return sleepRecords.stream().map(SleepResponse::sleepResponse).collect(Collectors.toList());
 	}
 

@@ -14,4 +14,5 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 	List<Activity> findByUserAndWorkoutType(User user, String workoutType);
 	List<Activity> findByUserAndActivityDateBetween(User user, LocalDate startDate, LocalDate endDate);
 	List<Activity> findByUserAndActivityDateBetweenAndWorkoutType(User user, LocalDate startDate, LocalDate endDate, String workoutType);
+	List<Activity> findByUserAndActivityDate(User user, LocalDate date);
 }
