@@ -1,5 +1,5 @@
 import React from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, StickyNote } from "lucide-react";
 
 const ActivityTable = ({ data, onEdit, onDelete }) => {
   return (
@@ -11,12 +11,15 @@ const ActivityTable = ({ data, onEdit, onDelete }) => {
             <th className="py-2 px-4">Steps</th>
             <th className="py-2 px-4">Calories</th>
             <th className="py-2 px-4">Duration</th>
+            <th className="p-2">Distance </th>
+            <th className="p-2">Notes</th>
             <th className="py-2 px-4">Actions</th>
+
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td colSpan="5">
+            <td colSpan="7">
               <hr className="border-blue-600" />
             </td>
           </tr>
@@ -25,17 +28,28 @@ const ActivityTable = ({ data, onEdit, onDelete }) => {
               key={activity.id}
               className="text-left border-b border-blue-600 hover:bg-gray-50 transition text-black"
             >
-              <td className="py-2 px-4">{activity.name}</td>
-              <td className="py-2 px-4">{activity.steps}</td>
-              <td className="py-2 px-4">{activity.calories}</td>
-              <td className="py-2 px-4">{activity.duration}</td>
+              <td className="py-2 px-4">{activity.workoutType}</td>
+              <td className="py-2 px-4">{activity.stepsCount}</td>
+              <td className="py-2 px-4">{activity.caloriesBurned}</td>
+              <td className="py-2 px-4">{activity.workoutDurationMinutes}</td>
+              <td className="py-2">{activity.distanceKm}  Km</td>
+              <td className="py-2 text-center">
+                {activity.notes ? (
+                  <span title={activity.notes} className="inline-flex justify-center items-center cursor-pointer">
+                    <StickyNote size={18} className="text-blue-500" />
+                  </span>
+                ) : (
+                  "-"
+                )}
+              </td>
+
               <td className="py-2 px-4">
                 <button
                   onClick={() =>
                     onEdit({
                       ...activity,
                       type: activity.name,
-                      duration: parseInt(activity.duration),
+                      duration: parseInt(activity.workoutDurationMinutes),
                     })
                   }
                   className="hover:text-green-600 mr-2 text-blue-600"
