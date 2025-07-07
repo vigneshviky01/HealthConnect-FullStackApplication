@@ -15,7 +15,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:5317"); // Frontend URL
+        config.addAllowedOrigin("http://localhost:5173"); // Frontend URL
         config.addAllowedOrigin("http://localhost:8080");
         
         // Allow common HTTP methods
