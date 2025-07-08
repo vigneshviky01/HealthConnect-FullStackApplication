@@ -38,7 +38,6 @@ public class ActivityController {
 	@Autowired
 	private ActivityService activityService;
 
-	// Get all activities with optional filtering
 	@Operation(summary = "Get all activity records for the authenticated user, optionally filtered by date range and workout type")
 	@GetMapping
 	@PreAuthorize("isAuthenticated()")
@@ -53,7 +52,6 @@ public class ActivityController {
 		return ResponseEntity.ok(activities);
 	}
 
-	// Get activities for a specific date
 	@Operation(summary = "Get activity records for a specific date for the authenticated user")
 	@GetMapping("/by-date")
 	@PreAuthorize("isAuthenticated()")
@@ -68,7 +66,6 @@ public class ActivityController {
 		return ResponseEntity.ok(activities);
 	}
 
-	// Get a specific activity by ID
 	@Operation(summary = "Get a specific activity record by ID for the authenticated user")
 	@GetMapping("/{id}")
 	@PreAuthorize("isAuthenticated()")
@@ -78,7 +75,6 @@ public class ActivityController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 
-	// Create a new activity record
 	@Operation(summary = "Create a new activity record for the authenticated user")
 	@PostMapping
 	@PreAuthorize("isAuthenticated()")
@@ -88,7 +84,6 @@ public class ActivityController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(activity);
 	}
 
-	// Update an existing activity record
 	@Operation(summary = "Update a specific activity record by ID for the authenticated user")
 	@PutMapping("/{id}")
 	@PreAuthorize("isAuthenticated()")
@@ -100,7 +95,6 @@ public class ActivityController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 
-	// Delete an activity record
 	@Operation(summary = "Delete a specific activity record by ID for the authenticated user")
 	@DeleteMapping("/{id}")
 	@PreAuthorize("isAuthenticated()")

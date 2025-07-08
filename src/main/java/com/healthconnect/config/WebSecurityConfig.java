@@ -79,6 +79,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/activities/**").authenticated()
                                 .requestMatchers("/api/mood/**").authenticated()
                 				.requestMatchers("/api/water/**").authenticated()
+                				.requestMatchers("/api/metrics/**").authenticated()
                                 // Default: protect everything else
                                 .anyRequest().authenticated()
                 );
