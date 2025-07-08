@@ -29,10 +29,10 @@ const ActivityTable = ({ data, onEdit, onDelete }) => {
               className="text-left border-b border-blue-600 hover:bg-gray-50 transition text-black"
             >
               <td className="py-2 px-4">{activity.workoutType}</td>
-              <td className="py-2 px-4">{activity.stepsCount}</td>
+              <td className="py-2 px-4">{activity.stepsCount==0?"-":activity.stepsCount}</td>
               <td className="py-2 px-4">{activity.caloriesBurned}</td>
               <td className="py-2 px-4">{activity.workoutDurationMinutes}</td>
-              <td className="py-2">{activity.distanceKm}  Km</td>
+              <td className="py-2">{activity.distanceKm==0?"-":`${activity.distanceKm} Km`} </td>
               <td className="py-2 text-center">
                 {activity.notes ? (
                   <span title={activity.notes} className="inline-flex justify-center items-center cursor-pointer">

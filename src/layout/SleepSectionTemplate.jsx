@@ -48,7 +48,7 @@ const SleepSectionTemplate = ({
 
         {loading ? (
           <p className="text-center text-blue-600">Loading...</p>
-        ) : records.length === 0 ? (
+        ) : todaySleepData.length === 0 ? (
         <EmptyDataPrompt message="Add your sleep Record for today"/>
         ) : (
           tableComponent
