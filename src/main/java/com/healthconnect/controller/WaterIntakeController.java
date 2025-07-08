@@ -17,14 +17,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/water")
+@Tag(name = "Water Intake", description = "Endpoints for managing user water intake records")
 public class WaterIntakeController {
 
     @Autowired
     private WaterIntakeService waterIntakeService;
 
+    @Operation(summary = "Create a new water intake record for the authenticated user")
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<WaterIntakeResponse> createWaterIntake(@Valid @RequestBody WaterIntakeRequest request) {
@@ -33,6 +37,7 @@ public class WaterIntakeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(waterIntake);
     }
 
+    @Operation(summary = "Get a specific water intake record by ID for the authenticated user")
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getWaterIntake(@PathVariable("id") Long waterIntakeId) {
@@ -42,6 +47,7 @@ public class WaterIntakeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Get all water intake records for the authenticated user, optionally filtered by date range")
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<WaterIntakeResponse>> getAllWaterIntakes(
@@ -52,6 +58,7 @@ public class WaterIntakeController {
         return ResponseEntity.ok(waterIntakes);
     }
 
+    @Operation(summary = "Update a specific water intake record by ID for the authenticated user")
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateWaterIntake(
@@ -63,6 +70,7 @@ public class WaterIntakeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Delete a specific water intake record by ID for the authenticated user")
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteWaterIntake(@PathVariable("id") Long waterIntakeId) {

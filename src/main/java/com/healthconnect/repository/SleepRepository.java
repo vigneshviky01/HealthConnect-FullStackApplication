@@ -35,5 +35,4 @@ public interface SleepRepository extends JpaRepository<Sleep, Long> {
 	Double getAvgSleepQuality(@Param("userId") Long userId,
 	                          @Param("start") LocalDateTime start,
 	                          @Param("end") LocalDateTime end);
-
 }

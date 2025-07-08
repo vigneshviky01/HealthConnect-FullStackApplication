@@ -27,15 +27,19 @@ import com.healthconnect.transfer.response.ActivityResponse;
 import com.healthconnect.transfer.response.MessageResponse;
 
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/activities")
+@Tag(name = "Activity", description = "Endpoints for managing user activity records")
 public class ActivityController {
 
 	@Autowired
 	private ActivityService activityService;
 
 	// Get all activities with optional filtering
+	@Operation(summary = "Get all activity records for the authenticated user, optionally filtered by date range and workout type")
 	@GetMapping
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<ActivityResponse>> getAllActivities(
@@ -50,6 +54,7 @@ public class ActivityController {
 	}
 
 	// Get activities for a specific date
+	@Operation(summary = "Get activity records for a specific date for the authenticated user")
 	@GetMapping("/by-date")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<ActivityResponse>> getActivitiesByDate(
@@ -64,6 +69,7 @@ public class ActivityController {
 	}
 
 	// Get a specific activity by ID
+	@Operation(summary = "Get a specific activity record by ID for the authenticated user")
 	@GetMapping("/{id}")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<?> getActivity(@PathVariable("id") Long activityId) {
@@ -73,6 +79,7 @@ public class ActivityController {
 	}
 
 	// Create a new activity record
+	@Operation(summary = "Create a new activity record for the authenticated user")
 	@PostMapping
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<ActivityResponse> createActivity(@Valid @RequestBody ActivityRequest request) {
@@ -82,6 +89,7 @@ public class ActivityController {
 	}
 
 	// Update an existing activity record
+	@Operation(summary = "Update a specific activity record by ID for the authenticated user")
 	@PutMapping("/{id}")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<?> updateActivity(@PathVariable("id") Long activityId,
@@ -93,6 +101,7 @@ public class ActivityController {
 	}
 
 	// Delete an activity record
+	@Operation(summary = "Delete a specific activity record by ID for the authenticated user")
 	@DeleteMapping("/{id}")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<?> deleteActivity(@PathVariable("id") Long activityId) {

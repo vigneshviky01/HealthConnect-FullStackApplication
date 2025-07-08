@@ -28,15 +28,19 @@ import com.healthconnect.transfer.request.SleepRequest;
 import com.healthconnect.transfer.response.MessageResponse;
 import com.healthconnect.transfer.response.SleepResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/sleep")
+@Tag(name = "Sleep", description = "Endpoints for managing user sleep records")
 public class SleepController {
 
 	@Autowired
 	private SleepService sleepService;
 	
+	@Operation(summary = "Get all sleep records for the authenticated user, optionally filtered by date/time and quality")
 	@GetMapping
 	@PreAuthorize("isAuthenticated")
 	public ResponseEntity<List<SleepResponse>> getAllSleepRecord(
@@ -51,6 +55,7 @@ public class SleepController {
 	}
 
 	// Get sleep records for a specific date
+	@Operation(summary = "Get sleep records for a specific date for the authenticated user")
 	@GetMapping("/by-date")
 	@PreAuthorize("isAuthenticated")
 	public ResponseEntity<List<SleepResponse>> getSleepRecordsByDate(
@@ -62,6 +67,7 @@ public class SleepController {
 		return ResponseEntity.ok(sleepRecords);
 	}
 	
+	@Operation(summary = "Get a specific sleep record by ID for the authenticated user")
 	@GetMapping("/{id}")
 	@PreAuthorize("isAuthenticated")
 	public ResponseEntity<?> getSleepRecord(@PathVariable("id") Long sleepId){
@@ -70,6 +76,7 @@ public class SleepController {
 				.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
+	@Operation(summary = "Create a new sleep record for the authenticated user")
 	@PostMapping
 	@PreAuthorize("isAuthenticated")
 	public ResponseEntity<SleepResponse> createSleepRecord(@Valid @RequestBody SleepRequest request) {
@@ -78,6 +85,7 @@ public class SleepController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(sleepRecord);
 	}
 	
+	@Operation(summary = "Update a specific sleep record by ID for the authenticated user")
 	@PutMapping("/{id}")
 	@PreAuthorize("isAuthenticated")
 	public ResponseEntity<?> updateSleepRecord(@PathVariable("id") Long sleepId, @Valid @RequestBody SleepRequest request){
@@ -86,6 +94,7 @@ public class SleepController {
 				.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 	
+	@Operation(summary = "Delete a specific sleep record by ID for the authenticated user")
 	@DeleteMapping("/{id}")
 	@PreAuthorize("isAuthenticated")
 	public ResponseEntity<?> deleteSleepRecord(@PathVariable("id") Long sleepId){

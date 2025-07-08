@@ -21,14 +21,18 @@ import com.healthconnect.service.UserService;
 import com.healthconnect.transfer.request.ProfileUpdateRequest;
 import com.healthconnect.transfer.response.MessageResponse;
 import com.healthconnect.transfer.response.UserProfileResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User", description = "Endpoints for user profile management")
 public class UserController {
 
 	@Autowired
 	private UserService userService;
 
+	@Operation(summary = "Get the profile of the authenticated user")
 	@GetMapping("/profile")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<?> getUserProfile() {
@@ -51,6 +55,7 @@ public class UserController {
 		}
 	}
 
+	@Operation(summary = "Update the profile of the authenticated user")
 	@PutMapping("/profile")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<?> updateUserProfile(@RequestBody ProfileUpdateRequest profileUpdateRequest) {
@@ -76,6 +81,7 @@ public class UserController {
 		}
 	}
 
+	@Operation(summary = "Delete the account of the authenticated user")
 	@DeleteMapping("/profile")
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<?> deleteUserAccount() {

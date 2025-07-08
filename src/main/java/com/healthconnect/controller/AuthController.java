@@ -21,9 +21,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "Endpoints for user authentication and registration")
 public class AuthController {
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -34,6 +37,7 @@ public class AuthController {
 	@Autowired
 	private JwtUtils jwtUtils;
 
+	@Operation(summary = "Authenticate user and return JWT token")
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 		Authentication authentication = authenticationManager.authenticate(
@@ -49,6 +53,7 @@ public class AuthController {
 				.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail()));
 	}
 
+	@Operation(summary = "Register a new user account")
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
 		// Check if username is already taken
@@ -66,6 +71,7 @@ public class AuthController {
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
 	
+	@Operation(summary = "Logout the current user and invalidate JWT token")
 	@PostMapping("/logout")
 	public ResponseEntity<?> logoutUser(HttpServletRequest request) {
 		String headerAuth = request.getHeader("Authorization");

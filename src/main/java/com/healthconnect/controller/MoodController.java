@@ -17,14 +17,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/mood")
+@Tag(name = "Mood", description = "Endpoints for managing user mood records")
 public class MoodController {
 
     @Autowired
     private MoodService moodService;
 
+    @Operation(summary = "Create a new mood record for the authenticated user")
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<MoodResponse> createMood(@Valid @RequestBody MoodRequest request) {
@@ -33,6 +37,7 @@ public class MoodController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mood);
     }
 
+    @Operation(summary = "Get a specific mood record by ID for the authenticated user")
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getMood(@PathVariable("id") Long moodId) {
@@ -42,6 +47,7 @@ public class MoodController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Get all mood records for the authenticated user, optionally filtered by date range")
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<MoodResponse>> getAllMoods(
@@ -52,6 +58,7 @@ public class MoodController {
         return ResponseEntity.ok(moods);
     }
 
+    @Operation(summary = "Update a specific mood record by ID for the authenticated user")
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateMood(
@@ -63,6 +70,7 @@ public class MoodController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Delete a specific mood record by ID for the authenticated user")
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteMood(@PathVariable("id") Long moodId) {
