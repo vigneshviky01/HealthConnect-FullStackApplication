@@ -2,6 +2,7 @@ import React from "react";
 import { Pencil, Trash2 } from "lucide-react";
 
 const WaterTable = ({ data, onEdit, onDelete }) => {
+  console.log(data)
   return (
     <div className="overflow-x-auto mt-2">
       <table className="min-w-[500px] w-full text-center border-t border-blue-600">
@@ -18,8 +19,8 @@ const WaterTable = ({ data, onEdit, onDelete }) => {
               key={entry.id}
               className="border-t border-blue-600 text-left hover:bg-gray-50 transition"
             >
-              <td className="py-2 px-4">{entry.date}</td>
-              <td className="py-2 px-4">{entry.amount}</td>
+              <td className="py-2 px-4">{entry.intakeDate}</td>
+              <td className="py-2 px-4">{entry.amountLiters}</td>
               <td className="py-2 px-4">
                 <div className="flex items-center gap-3">
                   <button

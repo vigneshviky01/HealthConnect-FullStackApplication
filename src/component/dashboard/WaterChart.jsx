@@ -13,22 +13,17 @@ import {
 const WaterChart = ({ data }) => {
   const chartData = useMemo(() => {
     const dateMap = {};
-    data.forEach(({ date, amount }) => {
-      if (!dateMap[date]) dateMap[date] = 0;
-      dateMap[date] += parseFloat(amount);
+
+    data.forEach(({ intakeDate, amountLiters }) => {
+      if (!dateMap[intakeDate]) dateMap[intakeDate] = 0;
+      dateMap[intakeDate] += parseFloat(amountLiters);
     });
 
     return Object.entries(dateMap)
-      .map(([date, amount]) => ({ date, liters: amount }))
+      .map(([date, liters]) => ({ date, liters }))
       .sort((a, b) => new Date(a.date) - new Date(b.date))
-      .slice(-7);
+      .slice(-7); // last 7 days
   }, [data]);
-
-  // Optional: short date formatter (e.g., Jul 2)
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return `${date.toLocaleString("default", { month: "short" })} ${date.getDate()}`;
-  };
 
   return (
     <div className="w-full bg-gray-100 p-4 rounded-md shadow-sm overflow-x-auto">
@@ -39,12 +34,12 @@ const WaterChart = ({ data }) => {
             margin={{ top: 20, right: 20, left: 10, bottom: 30 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-           <XAxis
+            <XAxis
               dataKey="date"
               angle={-45}
               textAnchor="end"
               interval={0}
-              height={60} // makes space for long labels
+              height={60}
             >
               <Label
                 value="Date"
@@ -59,18 +54,18 @@ const WaterChart = ({ data }) => {
                 angle: -90,
                 position: "insideLeft",
                 offset: 10,
-                style: { fill: "#555" },
+                style: { fill: "#555" }
               }}
             />
             <Tooltip
-              formatter={(value, name) => [`${value} L`, "Water Intake"]}
+              formatter={(value) => [`${value} L`, "Water Intake"]}
               labelFormatter={(label) => `Date: ${label}`}
             />
             <Bar
               dataKey="liters"
               fill="#3b82f6"
               radius={[8, 8, 0, 0]}
-              stroke="none" // removes border on hover
+              stroke="none"
             />
           </BarChart>
         </ResponsiveContainer>

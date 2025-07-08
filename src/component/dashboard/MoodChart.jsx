@@ -1,4 +1,3 @@
-// MoodChart.jsx (Responsive and Insightful for 100+ entries)
 import React, { useMemo } from "react";
 import {
   ResponsiveContainer,
@@ -11,43 +10,32 @@ import {
   Label,
 } from "recharts";
 
-
-
-const emojiMap = {
-  Happy: "😊",
-  Sad: "😢",
-  Stressed: "😫",
-  Relaxed: "😌",
-  Energetic: "💪",
-  Tired: "😴",
-  Angry: "😠",
-};
-
-const moodToNumber = {
-  Angry: 0,
-  Sad: 1,
-  Stressed: 2,
-  Tired: 3,
-  Relaxed: 4,
-  Energetic: 5,
-  Happy: 6,
+// Mood level descriptions without emojis
+const moodLabelMap = {
+  1: "Very Bad",
+  2: "Bad",
+  3: "Neutral",
+  4: "Good",
+  5: "Excellent",
 };
 
 const MoodChart = ({ data }) => {
   const chartData = useMemo(() => {
     return data
-      .filter((entry) => moodToNumber[entry.mood] !== undefined)
-      .map(({ date, mood }) => ({
-        date,
-        moodValue: moodToNumber[mood],
+      .filter((entry) => entry.moodRating !== undefined)
+      .map(({ moodDate, moodRating }) => ({
+        date: moodDate,
+        moodValue: parseInt(moodRating),
       }))
       .sort((a, b) => new Date(a.date) - new Date(b.date))
-      .slice(-30); // Show last 30 days
+      .slice(-7); // Show last 30 entries
   }, [data]);
 
   return (
     <div className="w-full bg-white p-4 rounded-lg shadow-sm overflow-x-auto">
-      <h3 className="text-lg font-semibold mb-4 text-blue-600">Mood Trend (Last 30 Days)</h3>
+      <h3 className="text-lg font-semibold mb-4 text-blue-600">
+        Mood Trend (Last 30 Days)
+      </h3>
       <div className="min-w-[400px]" style={{ height: "280px" }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
@@ -70,24 +58,21 @@ const MoodChart = ({ data }) => {
               />
             </XAxis>
             <YAxis
-              domain={[0, 6]}
-              tickFormatter={(value) => {
-                const mood = Object.keys(moodToNumber).find(
-                  (key) => moodToNumber[key] === value
-                );
-                return emojiMap[mood] || value;
-              }}
-              tick={{ fontSize: 16 }}
+              domain={[1, 5]}
+              allowDecimals={false}
+              tickFormatter={(value) => moodLabelMap[value] || value}
+              tick={{ fontSize: 14 }}
             >
-              <Label value="Mood" angle={-90} position="insideLeft" />
+              <Label
+                value="Mood"
+                angle={-90}
+                position="insideLeft"
+                style={{ fill: "#555" }}
+                 offset={-5}
+              />
             </YAxis>
             <Tooltip
-              formatter={(value) => {
-                const mood = Object.keys(moodToNumber).find(
-                  (key) => moodToNumber[key] === value
-                );
-                return [`${emojiMap[mood]} ${mood}`, "Mood"];
-              }}
+              formatter={(value) => [`${moodLabelMap[value]}`, "Mood"]}
               labelStyle={{ fontWeight: "bold" }}
             />
             <Line
@@ -95,7 +80,7 @@ const MoodChart = ({ data }) => {
               dataKey="moodValue"
               stroke="#3b82f6"
               strokeWidth={3}
-              dot={{ r: 6 }}
+              dot={{ r: 5 }}
               name="Mood"
             />
           </LineChart>
