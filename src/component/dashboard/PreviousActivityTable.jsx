@@ -1,11 +1,12 @@
-import React, { useState } from "react";
 
+import React, { useState } from "react";
+import { StickyNote } from "lucide-react";
 const PreviousActivityTable = ({ data }) => {
   const [ascending, setAscending] = useState(true);
 
   // Sort data by date
   const sortedRecords = [...data].sort((a, b) =>
-    ascending ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)
+    ascending ? new Date(a.activityDate) - new Date(b.activityDate) : new Date(b.activityDate) - new Date(a.activityDate)
   );
 
   return (
@@ -28,16 +29,28 @@ const PreviousActivityTable = ({ data }) => {
               <th className="py-2 px-4">Steps</th>
               <th className="py-2 px-4">Calories</th>
               <th className="py-2 px-4">Duration</th>
+              <th className="px-4 py-2">Distance</th>
+              <th className="px-4 py-2">Notes</th>
             </tr>
           </thead>
           <tbody>
             {sortedRecords.map((record) => (
               <tr key={record.id} className="border-b border-blue-600 hover:bg-gray-50 transition text-black">
-                <td className="py-2 px-4">{record.date}</td>
-                <td className="py-2 px-4">{record.name}</td>
-                <td className="py-2 px-4">{record.steps} steps</td>
-                <td className="py-2 px-4">{record.calories} cal</td>
-                <td className="py-2 px-4">{record.duration}</td>
+                <td className="py-2 px-4">{record.activityDate}</td>
+                <td className="py-2 px-4">{record.workoutType}</td>
+                <td className="py-2 px-4">{record.stepsCount} steps</td>
+                <td className="py-2 px-4">{record.caloriesBurned} cal</td>
+                <td className="py-2 px-4">{record.workoutDurationMinutes}</td>
+                <td className="px-4 py-2">{record.distanceKm} km</td>
+                <td className="px-4 py-2 text-center">
+                  {record.notes ? (
+                    <span title={record.notes} className="inline-flex justify-center items-center cursor-pointer">
+                      <StickyNote size={18} className="text-blue-500" />
+                    </span>
+                  ) : (
+                    "-"
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
