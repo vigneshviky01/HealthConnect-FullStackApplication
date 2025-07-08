@@ -7,35 +7,37 @@ import MoodTable from "../component/dashboard/MoodTable";
 import MoodChart from "../component/dashboard/MoodChart";
 import PreviousMoodTable from "../component/dashboard/PreviousMoodTable";
 import EmptyDataPrompt from "../component/EmptyDataPrompt";
+import ConfirmDialog from "../component/ConfirmDialog";
 
 const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
   const token = sessionStorage.getItem("authToken");
   const today = new Date().toISOString().slice(0, 10);
 
-  const [formData, setFormData] = useState({ mood: "", note: "" });
+  const [formData, setFormData] = useState({ moodRating: "", notes: "" });
   const [editData, setEditData] = useState(null);
   const [moodLogs, setMoodLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chartOrHistory, setChartOrHistory] = useState("chart");
   const [showForm, setShowForm] = useState(false);
-
-  const dummyRecords = [
-    { id: 1, date: "2025-06-28", mood: "Happy", note: "Had a great day!" },
-    { id: 2, date: "2025-06-29", mood: "Sad", note: "Felt down." },
-    {
-      id: 3,
-      date: "2025-06-30",
-      mood: "Excited",
-      note: "Something good happened!",
-    },
-    { id: 4, date: "2025-07-01", mood: "Angry", note: "Bad service." },
-    { id: 5, date: "2025-07-02", mood: "Happy", note: "Weekend!" },
-    { id: 6, date: today, mood: "Calm", note: "Just chill." },
-  ];
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  // const dummyRecords = [
+  //   { id: 1, date: "2025-06-28", mood: "Happy", note: "Had a great day!" },
+  //   { id: 2, date: "2025-06-29", mood: "Sad", note: "Felt down." },
+  //   {
+  //     id: 3,
+  //     date: "2025-06-30",
+  //     mood: "Excited",
+  //     note: "Something good happened!",
+  //   },
+  //   { id: 4, date: "2025-07-01", mood: "Angry", note: "Bad service." },
+  //   { id: 5, date: "2025-07-02", mood: "Happy", note: "Weekend!" },
+  //   { id: 6, date: today, mood: "Calm", note: "Just chill." },
+  // ];
 
   const fetchMoodLogs = async () => {
     try {
-      const res = await axios.get(`http://localhost:5055/mood-log`, {
+      const res = await axios.get(`http://localhost:8080/api/mood`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMoodLogs(res.data);
@@ -49,18 +51,27 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = {
+        moodDate: today,
+        moodRating: editData?.moodRating || formData.moodRating,
+        notes: editData?.notes || formData.notes,
+      };
       if (editData) {
-        await axios.post(`http://localhost:5055/update-mood-log`, editData, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.put(
+          `http://localhost:8080/api/mood/${editData.id}`,
+          payload,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setEditData(null);
       } else {
-        await axios.post(
-          `http://localhost:5055/mood-log`,
-          { ...formData, date: today },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setFormData({ mood: "", note: "" });
+        console.log(formData);
+        console.log(payload);
+        await axios.post(`http://localhost:8080/api/mood`, payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setFormData({ moodRating: "", notes: "" });
       }
       fetchMoodLogs();
       setShowForm(false);
@@ -69,24 +80,46 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
     }
   };
 
-  const handleDelete = async (id) => {
+  // const handleDelete = async (id) => {
+  //   try {
+  //     await axios.delete(`http://localhost:8080/api/mood/${id}`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     fetchMoodLogs();
+  //   } catch (err) {
+  //     console.error("Error deleting mood entry", err);
+  //   }
+  // };
+  const confirmDelete = (id) => {
+    setDeleteId(id);
+    setShowConfirm(true);
+  };
+
+  const performDelete = async () => {
+    if (!deleteId) return;
+
     try {
-      await axios.delete(`http://localhost:5055/delete-mood-log/${id}`, {
+      await axios.delete(`http://localhost:8080/api/mood/${deleteId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      toast.success("Mood entry deleted successfully!");
       fetchMoodLogs();
     } catch (err) {
-      console.error("Error deleting mood entry", err);
+      console.error("Error deleting Mood entry", err);
+    } finally {
+      setShowConfirm(false);
+      setDeleteId(null);
     }
   };
 
   useEffect(() => {
     fetchMoodLogs();
-    setMoodLogs(dummyRecords); // Only for test/demo
+    // setMoodLogs(dummyRecords); // Only for test/demo
   }, []);
 
-  const hasTodayMood = moodLogs.some((entry) => entry.date === today);
-
+  const hasTodayMood = moodLogs.some((entry) => entry.moodDate === today);
+  const previousLogs = moodLogs.filter((w) => w.moodDate !== today);
   return (
     <div className="p-6 mt-5 max-w-4xl mx-auto space-y-6">
       <h2 className="text-2xl font-bold text-blue-600">{title}</h2>
@@ -158,16 +191,17 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
 
         {loading ? (
           <p className="text-center text-blue-600">Loading...</p>
-        ) : (
-            hasTodayMood?(
+        ) : hasTodayMood ? (
           <MoodTable
-            data={moodLogs.filter((w) => w.date === today)}
+            data={moodLogs.filter((w) => w.moodDate === today)}
             onEdit={(entry) => {
               setEditData(entry);
               setShowForm(true);
             }}
-            onDelete={handleDelete}
-          />):<EmptyDataPrompt message="Log your mood for today!" />
+            onDelete={confirmDelete}
+          />
+        ) : (
+          <EmptyDataPrompt message="Log your mood for today!" />
         )}
       </div>
 
@@ -198,9 +232,13 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
         {chartOrHistory === "chart" ? (
           <div className="p-4">
             <h3 className="font-semibold text-lg mb-2 text-blue-600">
-              Mood Overview
+              Overview
             </h3>
-            <MoodChart data={moodLogs} />
+            {moodLogs.length > 0 ? (
+              <MoodChart data={moodLogs} />
+            ) : (
+              <div className="text-center">No data</div>
+            )}
           </div>
         ) : (
           <div className="p-4">
@@ -208,13 +246,24 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
               Previous Entries
             </h3>
             <div className="w-full bg-gray-100 p-4 rounded-md shadow-sm">
-              <PreviousMoodTable
-                data={moodLogs.filter((w) => w.date !== today)}
-              />
+              {previousLogs.length > 0 ? (
+                <PreviousMoodTable data={previousLogs} />
+              ) : (
+                <div className="text-center">No data</div>
+              )}
             </div>
           </div>
         )}
       </div>
+      <ConfirmDialog
+        isOpen={showConfirm}
+        message="Are you sure you want to delete this mood entry?"
+        onConfirm={performDelete}
+        onCancel={() => {
+          setShowConfirm(false);
+          setDeleteId(null);
+        }}
+      />
     </div>
   );
 };

@@ -16,9 +16,9 @@ const MoodTable = ({ data, onEdit, onDelete }) => {
         <tbody>
           {data.map((entry) => (
             <tr key={entry.id} className="border-t border-blue-600">
-              <td className="py-2 px-4">{entry.date}</td>
-              <td className="py-2 px-4">{entry.mood}</td>
-              <td className="py-2 px-4">{entry.note}</td>
+              <td className="py-2 px-4">{entry.moodDate}</td>
+              <td className="py-2 px-4">{entry.moodRating}</td>
+              <td className="py-2 px-4">{entry.notes}</td>
               <td className="py-2 px-4 flex gap-2">
                 <button onClick={() => onEdit(entry)} className="text-blue-600 hover:text-green-600">
                   <Pencil size={18} />

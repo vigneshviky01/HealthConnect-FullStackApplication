@@ -5,12 +5,13 @@ const PreviousWaterTable = ({ data }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
 
-  // Group by date and sum amount
+  // Group by date and sum amountLiters
   const grouped = data.reduce((acc, curr) => {
-    if (!acc[curr.date]) {
-      acc[curr.date] = { date: curr.date, amount: 0 };
+    const date = curr.intakeDate;
+    if (!acc[date]) {
+      acc[date] = { date, amount: 0 };
     }
-    acc[curr.date].amount += parseFloat(curr.amount);
+    acc[date].amount += parseFloat(curr.amountLiters);
     return acc;
   }, {});
 

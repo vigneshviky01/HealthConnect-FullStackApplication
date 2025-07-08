@@ -1,21 +1,31 @@
 import React, { useState } from "react";
 
+const ratingMap = {
+  1: "Very Bad",
+  2: "Bad",
+  3: "Neutral",
+  4: "Good",
+  5: "Excellent",
+};
+
 const PreviousMoodTable = ({ data }) => {
   const [ascending, setAscending] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
 
-  // Group moods by date
+  // Group moods by moodDate
   const grouped = data.reduce((acc, item) => {
-    if (!acc[item.date]) acc[item.date] = [];
-    acc[item.date].push(item);
+    if (!acc[item.moodDate]) acc[item.moodDate] = [];
+    acc[item.moodDate].push(item);
     return acc;
   }, {});
 
   const groupedRecords = Object.entries(grouped)
-    .map(([date, moods]) => ({ date, moods }))
+    .map(([moodDate, moods]) => ({ moodDate, moods }))
     .sort((a, b) =>
-      ascending ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)
+      ascending
+        ? new Date(a.moodDate) - new Date(b.moodDate)
+        : new Date(b.moodDate) - new Date(a.moodDate)
     );
 
   const totalPages = Math.ceil(groupedRecords.length / recordsPerPage);
@@ -75,20 +85,20 @@ const PreviousMoodTable = ({ data }) => {
           <thead>
             <tr className="bg-gray-100 text-left">
               <th className="py-2 px-4">Date</th>
-              <th className="py-2 px-4">Mood</th>
-              <th className="py-2 px-4">Note</th>
+              <th className="py-2 px-4">Mood Rating</th>
+              <th className="py-2 px-4">Notes</th>
             </tr>
           </thead>
           <tbody>
-            {currentRecords.map(({ date, moods }) =>
+            {currentRecords.map(({ moodDate, moods }) =>
               moods.map((mood, idx) => (
                 <tr
-                  key={mood.id + "-" + idx}
+                  key={`${mood.id}-${idx}`}
                   className="border-b border-blue-600 text-black hover:bg-gray-50 transition"
                 >
-                  <td className="py-2 px-4">{idx === 0 ? date : ""}</td>
-                  <td className="py-2 px-4">{mood.mood}</td>
-                  <td className="py-2 px-4">{mood.note}</td>
+                  <td className="py-2 px-4">{idx === 0 ? moodDate : ""}</td>
+                  <td className="py-2 px-4">{ratingMap[mood.moodRating] || "N/A"}</td>
+                  <td className="py-2 px-4">{mood.notes}</td>
                 </tr>
               ))
             )}
