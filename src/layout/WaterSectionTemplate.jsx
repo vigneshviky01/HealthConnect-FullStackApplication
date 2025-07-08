@@ -125,6 +125,9 @@ const performDelete = async () => {
 };
 
  
+useEffect(() => {
+  fetchWaterLogs();
+}, []);
 
   const hasTodayWaterLogs =
     waterLogs && waterLogs.some((entry) => entry.intakeDate === today);

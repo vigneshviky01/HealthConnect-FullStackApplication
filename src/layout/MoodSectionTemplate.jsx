@@ -115,7 +115,7 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
 
   useEffect(() => {
     fetchMoodLogs();
-    // setMoodLogs(dummyRecords); // Only for test/demo
+  
   }, []);
 
   const hasTodayMood = moodLogs.some((entry) => entry.moodDate === today);
