@@ -6,6 +6,7 @@ import axios from "axios";
 import PreviousActivityTable from "../component/dashboard/PreviousActivityTable";
 import { BarChart3, FileX2 } from "lucide-react";
 import EmptyDataPrompt from "../component/EmptyDataPrompt";
+import ConfirmDialog from "../component/ConfirmDialog";
 const ActivitySectionTemplate = ({
   title,
   formComponent: FormComponent,
@@ -29,6 +30,8 @@ const ActivitySectionTemplate = ({
   const [loadingToday, setLoadingToday] = useState(true);
   const [chartOrHistory, setChartOrHistory] = useState("chart");
   const [showForm, setShowForm] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [activityToDelete, setActivityToDelete] = useState(null);
 
 
 
@@ -39,6 +42,7 @@ const ActivitySectionTemplate = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       await axios.post(
         "http://localhost:8080/api/activities",
@@ -54,6 +58,7 @@ const ActivitySectionTemplate = ({
   };
 
   const handleUpdate = async (e) => {
+
     e.preventDefault();
     try {
       const payload = {
@@ -65,9 +70,10 @@ const ActivitySectionTemplate = ({
         notes: editData.notes,
         activityDate: today
       };
-      await axios.post(
+      console.log(editData);
+      await axios.put(
         `http://localhost:8080/api/activities/${editData.id}`,
-        { payload },
+        payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setEditData(null);
@@ -77,15 +83,20 @@ const ActivitySectionTemplate = ({
     }
   };
 
-  const handleDelete = async (id) => {
+  const confirmDelete = async () => {
+    if (!activityToDelete) return;
+
     try {
-      await axios.delete(`http://localhost:8080/api/activities/${id}`, {
+      await axios.delete(`http://localhost:8080/api/activities/${activityToDelete}`, {
         headers: { Authorization: `Bearer ${token}` },
         data: { date: today },
       });
       fetchTodayActivities();
     } catch (err) {
       console.error("Error deleting activity", err);
+    } finally {
+      setShowConfirm(false);
+      setActivityToDelete(null);
     }
   };
 
@@ -126,10 +137,13 @@ const ActivitySectionTemplate = ({
         {loadingToday ? (
           <p className="text-center text-blue-600">Loading...</p>
         ) : activityLogs.length === 0 ? (
-          <EmptyDataPrompt message="Add your Activity record for today"/>
-          
+          <EmptyDataPrompt message="Add your Activity record for today" />
+
         ) : (
-          <ActivityTable data={activityLogs} onEdit={setEditData} onDelete={handleDelete} />
+          <ActivityTable data={activityLogs} onEdit={setEditData} onDelete={(id) => {
+            setActivityToDelete(id);
+            setShowConfirm(true);
+          }} />
         )}
 
         {/* Add Form Modal */}
@@ -163,6 +177,16 @@ const ActivitySectionTemplate = ({
             </form>
           </div>
         )}
+
+        <ConfirmDialog
+          isOpen={showConfirm}
+          message="Are you sure you want to delete this activity?"
+          onConfirm={confirmDelete}
+          onCancel={() => {
+            setShowConfirm(false);
+            setActivityToDelete(null);
+          }}
+        />
       </div>
 
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow">

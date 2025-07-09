@@ -6,7 +6,7 @@ import SleepForm from "../../component/dashboard/SleepForm";
 import SleepChart from "../../component/dashboard/SleepChart";
 import SleepTable from "../../component/dashboard/SleepTable";
 import PreviousSleepTable from "../../component/dashboard/PreviousSleepTable";
-
+import ConfirmDialog from "../../component/ConfirmDialog";
 
 
 const SleepTracker = () => {
@@ -16,6 +16,9 @@ const SleepTracker = () => {
   const [TodaySleepLogs, setTodaySleepLogs] = useState([]);
   const [PreviousSleepLogs, setPreviousSleepLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false);
+const [sleepIdToDelete, setSleepIdToDelete] = useState(null);
+
 
   const fetchSleepData = async () => {
     try {
@@ -37,6 +40,7 @@ const SleepTracker = () => {
       );
       setTodaySleepLogs(todayLogs);       //1 data in array
       setPreviousSleepLogs(previousLogs);
+      
 
     } catch (err) {
       console.error("Error fetching activity data", err);
@@ -67,7 +71,7 @@ const SleepTracker = () => {
         notes: formData.notes || "No notes"
       };
 
-      console.log(payload);
+    
 
       await axios.post("http://localhost:8080/api/sleep", payload, {
         headers: { Authorization: `Bearer ${token}` }
@@ -114,17 +118,20 @@ const SleepTracker = () => {
   };
 
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:8080/api/sleep/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      fetchSleepData();
-    } catch (err) {
-      console.error("Error deleting activity", err);
-    }
-  };
+  const confirmDelete = async () => {
+  if (!sleepIdToDelete) return;
+  try {
+    await axios.delete(`http://localhost:8080/api/sleep/${sleepIdToDelete}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    fetchSleepData();
+  } catch (err) {
+    console.error("Error deleting activity", err);
+  } finally {
+    setShowConfirm(false);
+    setSleepIdToDelete(null);
+  }
+};
 
   return (
     <>
@@ -138,7 +145,10 @@ const SleepTracker = () => {
           <SleepTable
             data={TodaySleepLogs}
             onEdit={(data) => setEditData({ ...data })}
-            onDelete={handleDelete}
+            onDelete={(id) => {
+    setSleepIdToDelete(id);
+    setShowConfirm(true);
+  }}
           />
         }
         previousTable={
@@ -148,13 +158,23 @@ const SleepTracker = () => {
         loading={loading}
         onSubmit={handleSubmit}
         onUpdate={handleUpdate}
-        onDelete={handleDelete}
+        onDelete={confirmDelete}
         formData={formData}
         setFormData={setFormData}
         editData={editData}
         setEditData={setEditData}
         todaySleepData={TodaySleepLogs}
       />
+      <ConfirmDialog
+  isOpen={showConfirm}
+  message="Are you sure you want to delete this sleep record?"
+  onConfirm={confirmDelete}
+  onCancel={() => {
+    setShowConfirm(false);
+    setSleepIdToDelete(null);
+  }}
+/>
+
     </>
   );
 };

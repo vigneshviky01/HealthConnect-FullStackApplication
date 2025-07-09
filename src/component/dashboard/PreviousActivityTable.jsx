@@ -38,10 +38,10 @@ const PreviousActivityTable = ({ data }) => {
               <tr key={record.id} className="border-b border-blue-600 hover:bg-gray-50 transition text-black">
                 <td className="py-2 px-4">{record.activityDate}</td>
                 <td className="py-2 px-4">{record.workoutType}</td>
-                <td className="py-2 px-4">{record.stepsCount} steps</td>
+                <td className="py-2 px-4">{record.stepsCount==0?"-":`${record.stepsCount}Steps`} </td>
                 <td className="py-2 px-4">{record.caloriesBurned} cal</td>
                 <td className="py-2 px-4">{record.workoutDurationMinutes}</td>
-                <td className="px-4 py-2">{record.distanceKm} km</td>
+                <td className="px-4 py-2">{record.distanceKm==0?"-":`${record.distanceKm} Km`}</td>
                 <td className="px-4 py-2 text-center">
                   {record.notes ? (
                     <span title={record.notes} className="inline-flex justify-center items-center cursor-pointer">

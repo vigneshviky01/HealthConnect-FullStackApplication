@@ -59,7 +59,7 @@ const SleepTable = ({ data, onEdit, onDelete }) => {
               <td className="p-2">
                 {entry.notes ? (
                   <span title={entry.notes} className="inline-flex justify-center items-center cursor-pointer">
-                    <StickyNote size={18} className="text-blue" />
+                    <StickyNote size={18} className="text-blue-300" />
                   </span>
                 ) : (
                   "-"
