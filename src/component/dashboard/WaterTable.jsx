@@ -14,10 +14,15 @@ const WaterTable = ({ data, onEdit, onDelete }) => {
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <td colSpan="7">
+              <hr className="border-blue-600" />
+            </td>
+          </tr>
           {data.map((entry) => (
             <tr
               key={entry.id}
-              className="border-t border-blue-600 text-left hover:bg-gray-50 transition"
+              className="border-b border-blue-600 text-left hover:bg-gray-50 transition"
             >
               <td className="py-2 px-4">{entry.intakeDate}</td>
               <td className="py-2 px-4">{entry.amountLiters}</td>

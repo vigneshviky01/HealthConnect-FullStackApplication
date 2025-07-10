@@ -48,7 +48,7 @@ function Login() {
               Email or Username
             </label>
             <input
-              type="email"
+              type="text"
               placeholder="Enter your email or username"
               value={usernameOrEmail}
               onChange={(e) => setUsernameOrEmail(e.target.value)}

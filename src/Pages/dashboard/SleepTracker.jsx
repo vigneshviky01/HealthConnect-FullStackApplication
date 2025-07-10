@@ -7,6 +7,7 @@ import SleepChart from "../../component/dashboard/SleepChart";
 import SleepTable from "../../component/dashboard/SleepTable";
 import PreviousSleepTable from "../../component/dashboard/PreviousSleepTable";
 import ConfirmDialog from "../../component/ConfirmDialog";
+import { toast } from "react-toastify";
 
 
 const SleepTracker = () => {
@@ -14,6 +15,7 @@ const SleepTracker = () => {
   const [formData, setFormData] = useState({ from: "", to: "", quality: 0, notes: "" });
   const [editData, setEditData] = useState(null);
   const [TodaySleepLogs, setTodaySleepLogs] = useState([]);
+  const [AlldataLogs, setAllDataLogs] = useState([]);
   const [PreviousSleepLogs, setPreviousSleepLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -40,7 +42,7 @@ const [sleepIdToDelete, setSleepIdToDelete] = useState(null);
       );
       setTodaySleepLogs(todayLogs);       //1 data in array
       setPreviousSleepLogs(previousLogs);
-      
+      setAllDataLogs(allData);
 
     } catch (err) {
       console.error("Error fetching activity data", err);
@@ -124,6 +126,7 @@ const [sleepIdToDelete, setSleepIdToDelete] = useState(null);
     await axios.delete(`http://localhost:8080/api/sleep/${sleepIdToDelete}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    toast.success("sleep entry deleted successfully!");
     fetchSleepData();
   } catch (err) {
     console.error("Error deleting activity", err);
@@ -140,7 +143,7 @@ const [sleepIdToDelete, setSleepIdToDelete] = useState(null);
         title="Sleep Tracker"
         formComponent={SleepForm}
 
-        chartComponent={<SleepChart data={PreviousSleepLogs} />}
+        chartComponent={<SleepChart data={AlldataLogs} />}
         tableComponent={
           <SleepTable
             data={TodaySleepLogs}
@@ -152,7 +155,7 @@ const [sleepIdToDelete, setSleepIdToDelete] = useState(null);
           />
         }
         previousTable={
-          <PreviousSleepTable data={PreviousSleepLogs} />
+          <PreviousSleepTable data={AlldataLogs} />
         }
         records={PreviousSleepLogs}
         loading={loading}

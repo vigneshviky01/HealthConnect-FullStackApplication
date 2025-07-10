@@ -8,6 +8,7 @@ import MoodChart from "../component/dashboard/MoodChart";
 import PreviousMoodTable from "../component/dashboard/PreviousMoodTable";
 import EmptyDataPrompt from "../component/EmptyDataPrompt";
 import ConfirmDialog from "../component/ConfirmDialog";
+import { BarChart3, FileX2 } from "lucide-react";
 
 const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
   const token = sessionStorage.getItem("authToken");
@@ -205,8 +206,8 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
         )}
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow">
-        <div className="flex gap-2">
+      <div className="bg-white sm:p-4 rounded-lg shadow">
+        <div className="p-4 flex gap-2">
           <button
             onClick={() => setChartOrHistory("chart")}
             className={`px-4 py-2 rounded-md ${
@@ -237,7 +238,13 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
             {moodLogs.length > 0 ? (
               <MoodChart data={moodLogs} />
             ) : (
-              <div className="text-center">No data</div>
+              <div className="w-full bg-yellow-50 text-yellow-700 p-4 rounded-md shadow-sm border border-yellow-300 flex items-start gap-3">
+                <BarChart3 className="w-6 h-6 mt-1 text-yellow-700" />
+                <div>
+                  <p className="font-medium">No Previous data available for chart</p>
+
+                </div>
+              </div>
             )}
           </div>
         ) : (
@@ -249,7 +256,13 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
               {previousLogs.length > 0 ? (
                 <PreviousMoodTable data={previousLogs} />
               ) : (
-                <div className="text-center">No data</div>
+                 <div className="w-full bg-yellow-50 text-yellow-700 p-4 rounded-md shadow-sm border border-yellow-300 flex items-start gap-3">
+              <FileX2 className="w-6 h-6 mt-1 text-yellow-700" />
+              <div>
+                <p className="font-medium">No Previous records found</p>
+
+              </div>
+            </div>
               )}
             </div>
           </div>

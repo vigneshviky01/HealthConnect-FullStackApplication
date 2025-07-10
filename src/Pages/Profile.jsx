@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import { Pencil, Check, X, User } from "lucide-react";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
-// Move EditableField outside the main component to prevent recreation
+import { toast } from "react-toastify";
+import axios from "axios";
+
 const EditableField = ({
   label,
   keyName,
@@ -220,11 +222,27 @@ export default function Profile() {
     setErrors({});
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("authToken"); // Remove token
-    setUserInfo(null); // Clear context
-    navigate("/login",{ replace: true }); // Redirect to login page
-  };
+  const handleLogout = async () => {
+  const token = sessionStorage.getItem("authToken");
+
+  try {
+    await axios.post(
+      "http://localhost:8080/api/auth/logout",
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    toast.success("Logged out successfully");
+  } catch (error) {
+    console.error("Logout failed:", error);
+    toast.error("Logout failed. Proceeding to clear session.");
+  }
+
+  sessionStorage.removeItem("authToken"); // Remove token
+  setUserInfo(null);                      // Clear context
+  navigate("/login", { replace: true }); // Redirect to login page
+};
 
   console.log(userInfo);
 

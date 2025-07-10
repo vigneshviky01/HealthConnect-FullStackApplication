@@ -10,8 +10,8 @@ const ActivityTable = ({ data, onEdit, onDelete }) => {
             <th className="py-2 px-4">Activity</th>
             <th className="py-2 px-4">Steps</th>
             <th className="py-2 px-4">Calories</th>
-            <th className="py-2 px-4">Duration</th>
-            <th className="p-2">Distance </th>
+            <th className="py-2 px-4">Duration(mins)</th>
+            <th className="p-2">Distance(Km) </th>
             <th className="p-2">Notes</th>
             <th className="py-2 px-4">Actions</th>
 
@@ -32,8 +32,8 @@ const ActivityTable = ({ data, onEdit, onDelete }) => {
               <td className="py-2 px-4">{activity.stepsCount==0?"-":activity.stepsCount}</td>
               <td className="py-2 px-4">{activity.caloriesBurned}</td>
               <td className="py-2 px-4">{activity.workoutDurationMinutes}</td>
-              <td className="py-2">{activity.distanceKm==0?"-":`${activity.distanceKm} Km`} </td>
-              <td className="py-2 text-center">
+              <td className="py-2 px-4">{activity.distanceKm==0?"-":`${activity.distanceKm} Km`} </td>
+              <td className="py-2 px-4">
                 {activity.notes ? (
                   <span title={activity.notes} className="inline-flex justify-center items-center cursor-pointer">
                     <StickyNote size={18} className="text-blue-500" />
