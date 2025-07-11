@@ -4,6 +4,7 @@ import Navbar from "../../section/Navbar";
 import { useUser } from "../../context/UserContext";
 import Welcome from "../../section/dashboard/Welcome";
 import DashboardNav from "../../section/dashboard/DashboardNav";
+import BMICard from "../../component/dashboard/BMICard";
 
 const Dashboard = () => {
   const { userInfo, setUserInfo } = useUser();
@@ -28,6 +29,12 @@ const Dashboard = () => {
     <>
       <Welcome name={userInfo.name} />
       <DashboardNav />
+      {userInfo && (
+  <BMICard
+    height={userInfo.height}
+    weight={userInfo.weight}
+  />
+)}
     </>
   );
 };

@@ -21,12 +21,12 @@ const PreviousMoodTable = ({ data: initialData }) => {
   const recordsPerPage = 10;
   const token = sessionStorage.getItem("authToken");
 
-  // ✅ use props data on first load
+  
   useEffect(() => {
     setData(Array.isArray(initialData) ? initialData : []);
   }, [initialData]);
 
-  // ✅ fetch filtered data only on button click
+  
   const fetchMoodData = async () => {
     try {
       if (!startDate && !endDate) return;
@@ -106,13 +106,13 @@ const resetFilter = () => {
   </label>
   <button
     onClick={fetchMoodData}
-    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+    className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
   >
     Filter
   </button>
   <button
     onClick={resetFilter}
-    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
+    className="cursor-pointer bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
   >
     Reset
   </button>
@@ -121,7 +121,7 @@ const resetFilter = () => {
 
         <button
           onClick={() => setAscending(!ascending)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+          className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
         >
           Sort by Date {ascending ? "▼" : "▲"}
         </button>
@@ -170,7 +170,7 @@ const resetFilter = () => {
               className={`px-4 py-2 rounded-md ${
                 currentPage === 1
                   ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
               }`}
             >
               Prev
@@ -184,7 +184,7 @@ const resetFilter = () => {
               className={`px-4 py-2 rounded-md ${
                 currentPage === totalPages
                   ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
               }`}
             >
               Next

@@ -209,7 +209,7 @@ const validateForm = (data) => {
           <h2 className="text-lg font-semibold text-blue-600">Today's Activity</h2>
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm"
+            className="cursor-pointer flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm"
           >
             <Plus size={20} /> Add Activity
           </button>
@@ -244,13 +244,13 @@ const validateForm = (data) => {
                   onClick={() => {
                     showForm ? setShowForm(false) : setEditData(null);
                   }}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-full"
+                  className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-full"
                 >
                   Close
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
+                  className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-6 py-2 rounded-full"
                 >
                   {showForm ? "Submit" : "Update"}
                 </button>
@@ -274,7 +274,7 @@ const validateForm = (data) => {
         <div className="p-4 flex flex-wrap gap-2 ">
           <button
             onClick={() => setChartOrHistory("chart")}
-            className={`px-4 py-2 rounded-md text-sm ${chartOrHistory === "chart"
+            className={`cursor-pointer px-4 py-2 rounded-md text-sm ${chartOrHistory === "chart"
               ? "bg-gray-700 text-white"
               : "bg-gray-300 text-gray-700"
               }`}
@@ -283,7 +283,7 @@ const validateForm = (data) => {
           </button>
           <button
             onClick={() => setChartOrHistory("history")}
-            className={`px-4 py-2 rounded-md text-sm ${chartOrHistory === "history"
+            className={`cursor-pointer px-4 py-2 rounded-md text-sm ${chartOrHistory === "history"
               ? "bg-gray-700 text-white"
               : "bg-gray-300 text-gray-700"
               }`}

@@ -50,7 +50,7 @@ const SleepSectionTemplate = ({
                className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
               todaySleepData.length !== 0
                 ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer "
             }`}
             >
               <Plus size={20} /> Add Sleep
@@ -83,13 +83,13 @@ const SleepSectionTemplate = ({
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-full"
+                className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-full"
               >
                 Close
               </button>
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
+                className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
               >
                 Submit
               </button>
@@ -113,13 +113,13 @@ const SleepSectionTemplate = ({
               <button
                 type="button"
                 onClick={() => setEditData(null)}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-full"
+                className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-full"
               >
                 Close
               </button>
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
+                className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
               >
                 Update
               </button>
@@ -133,7 +133,7 @@ const SleepSectionTemplate = ({
         <div className="p-4 flex flex-wrap gap-2">
           <button
             onClick={() => setView("chart")}
-            className={`px-4 py-2 rounded-md ${
+            className={`cursor-pointer px-4 py-2 rounded-md ${
               view === "chart"
                 ? "bg-gray-700 text-white"
                 : "bg-gray-300 text-gray-700"
@@ -143,7 +143,7 @@ const SleepSectionTemplate = ({
           </button>
           <button
             onClick={() => setView("history")}
-            className={`px-4 py-2 rounded-md ${
+            className={`cursor-pointer px-4 py-2 rounded-md ${
               view === "history"
                 ? "bg-gray-700 text-white"
                 : "bg-gray-300 text-gray-700"

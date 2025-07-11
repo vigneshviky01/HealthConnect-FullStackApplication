@@ -52,13 +52,13 @@ const ActivityTable = ({ data, onEdit, onDelete }) => {
                       duration: parseInt(activity.workoutDurationMinutes),
                     })
                   }
-                  className="hover:text-green-600 mr-2 text-blue-600"
+                  className="hover:text-green-600 mr-2 text-blue-600 cursor-pointer"
                 >
                   <Pencil size={20} />
                 </button>
                 <button
                   onClick={() => onDelete(activity.id)}
-                  className="text-red-600 hover:text-red-800"
+                  className="text-red-600 hover:text-red-800 cursor-pointer"
                 >
                   <Trash2 size={20} />
                 </button>

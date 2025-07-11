@@ -148,7 +148,7 @@ const previousLogs = waterLogs.filter((w) => w.intakeDate !== today);
               setShowForm(true);
               setEditData(null);
             }}
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+            className="cursor-pointer flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
           >
             <Plus size={20} /> Log Water Intake
           </button>
@@ -181,13 +181,13 @@ const previousLogs = waterLogs.filter((w) => w.intakeDate !== today);
                     setShowForm(false);
                     setEditData(null);
                   }}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-full"
+                  className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-full"
                 >
                   Close
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
+                  className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
                 >
                   {editData ? "Update" : "Submit"}
                 </button>
@@ -216,7 +216,7 @@ const previousLogs = waterLogs.filter((w) => w.intakeDate !== today);
         <div className="p-4 flex gap-2">
           <button
             onClick={() => setChartOrHistory("chart")}
-            className={`px-4 py-2 rounded-md ${
+            className={`cursor-pointer px-4 py-2 rounded-md ${
               chartOrHistory === "chart"
                 ? "bg-gray-700 text-white"
                 : "bg-gray-300 text-gray-700"
@@ -226,7 +226,7 @@ const previousLogs = waterLogs.filter((w) => w.intakeDate !== today);
           </button>
           <button
             onClick={() => setChartOrHistory("history")}
-            className={`px-4 py-2 rounded-md ${
+            className={`cursor-pointer px-4 py-2 rounded-md ${
               chartOrHistory === "history"
                 ? "bg-gray-700 text-white"
                 : "bg-gray-300 text-gray-700"

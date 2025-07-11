@@ -141,7 +141,7 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
             className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
               hasTodayMood
                 ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-blue-600 text-white hover:bg-blue-700"
+                : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
             }`}
           >
             <Plus size={20} /> Log Mood
@@ -175,13 +175,13 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
                     setShowForm(false);
                     setEditData(null);
                   }}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-full"
+                  className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-full"
                 >
                   Close
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
+                  className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full"
                 >
                   {editData ? "Update" : "Submit"}
                 </button>
@@ -210,7 +210,7 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
         <div className="p-4 flex gap-2">
           <button
             onClick={() => setChartOrHistory("chart")}
-            className={`px-4 py-2 rounded-md ${
+            className={`cursor-pointer px-4 py-2 rounded-md ${
               chartOrHistory === "chart"
                 ? "bg-gray-700 text-white"
                 : "bg-gray-300 text-gray-700"
@@ -220,7 +220,7 @@ const MoodSectionTemplate = ({ title, formComponent: FormComponent }) => {
           </button>
           <button
             onClick={() => setChartOrHistory("history")}
-            className={`px-4 py-2 rounded-md ${
+            className={`cursor-pointer px-4 py-2 rounded-md ${
               chartOrHistory === "history"
                 ? "bg-gray-700 text-white"
                 : "bg-gray-300 text-gray-700"
