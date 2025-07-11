@@ -53,32 +53,47 @@ const WeeklyWaterChart = () => {
 
     fetchWaterData();
   }, []);
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white border border-gray-300 rounded-md p-2 text-sm shadow-md max-w-[80px] sm:max-w-[200px]">
+          <p className="font-semibold text-gray-700">{label}</p>
+          <p className="text-blue-600">{`Water Intake: ${payload[0].value} L`}</p>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
 
   return (
-    <div className="w-full h-[300px]">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis
-            label={{
-              value: "Liters",
-              angle: -90,
-              position: "insideLeft",
-            }}
-          />
-          <Tooltip />
-          <Line
-            type="monotone"
-            dataKey="liters"
-            name="Water Intake (L)"
-            stroke="#3b82f6"
-            strokeWidth={2}
-            dot={{ r: 5, strokeWidth: 2, fill: "#fff" }}
-            activeDot={{ r: 7 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+    <div className="w-full overflow-x-auto">
+      <div className="min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis
+              label={{
+                value: "Liters",
+                angle: -90,
+                position: "insideLeft",
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Line
+              type="monotone"
+              dataKey="liters"
+              name="Water Intake (L)"
+              stroke="#3b82f6"
+              strokeWidth={2}
+              dot={{ r: 4, strokeWidth: 1.5, fill: "#fff" }}
+              activeDot={{ r: 6 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

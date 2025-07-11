@@ -45,37 +45,51 @@ const MonthlySleepChart = () => {
 
     fetchMonthlySleep();
   }, []);
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white border border-gray-300 rounded-md p-2 text-sm shadow-md max-w-[80px] sm:max-w-[200px]">
+          <p className="font-semibold ">{label}</p>
+          <p className="text-sky-600">{`Avg Sleep Duration: ${payload[0].value} hrs`}</p>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   return (
-    <div className="max-w-4xl  mt-4 p-6 bg-white rounded-xl space-y-6">
-
-
-      <div className="w-full h-[350px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={monthlySleepData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="week" />
-            <YAxis
-              label={{
-                value: "Avg Hours",
-                angle: -90,
-                position: "insideLeft",
-              }}
-            />
-            <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="avgSleepHours"
-              name="Avg Sleep Duration (hrs)"
-              stroke="#06b6d4"
-              strokeWidth={2}
-              dot={{ r: 5, strokeWidth: 2, fill: "#fff" }}
-              activeDot={{ r: 7 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+    <div className="max-w-4xl mt-4 p-6 bg-white rounded-xl space-y-6">
+      <div className="w-full overflow-x-auto">
+        <div className="min-w-[500px] h-[200px] sm:h-[300px] md:h-[350px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={monthlySleepData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="week" />
+              <YAxis
+                label={{
+                  value: "Avg Hours",
+                  angle: -90,
+                  position: "insideLeft",
+                }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Line
+                type="monotone"
+                dataKey="avgSleepHours"
+                name="Avg Sleep Duration (hrs)"
+                stroke="#06b6d4"
+                strokeWidth={2}
+                dot={{ r: 4, strokeWidth: 1.5, fill: "#fff" }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
 };
 
 export default MonthlySleepChart;
+

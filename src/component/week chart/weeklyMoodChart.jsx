@@ -63,44 +63,61 @@ const WeeklyMoodChart = () => {
     fetchMoodData();
   }, []);
 
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (!active || !payload || payload.length === 0) return null;
+
+    const moodValue = payload[0].value;
+    const moodText = moodLabelMap[moodValue] || moodValue;
+
+    return (
+      <div className="bg-white p-2 border border-gray-200 rounded shadow text-sm max-w-[80px] sm:max-w-[100px]" >
+        <p className="font-semibold text-gray-800">Date: {label}</p>
+        <p className="text-sky-500">Mood: {moodText}</p>
+      </div>
+    );
+  };
+
+
+
   return (
-    <div className="max-w-4xl  mt-4 p-4 rounded-xl bg-white space-y-6">
+    <div className="max-w-4xl mt-4 p-4 rounded-xl bg-white space-y-6">
       <h2 className="text-xl font-semibold text-blue-500">Mood (Last 7 Days)</h2>
-      <div className="w-full h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={moodData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis
-              domain={[1, 5]}
-              tickFormatter={(value) => moodLabelMap[value] || ""}
-              ticks={[1, 2, 3, 4, 5]}
-              label={{
-               
-                angle: -90,
-                position: "insideLeft",
-              }}
-            />
-            <Tooltip
-              formatter={(value) => moodLabelMap[value] || value}
-              labelFormatter={(label) => `Date: ${label}`}
-            />
-            <Line
-              type="monotone"
-              dataKey="moodRating"
-              name="Mood Rating"
-              stroke="#0ea5e9"
-              strokeWidth={2}
-              dot={{ r: 5, strokeWidth: 2, fill: "#fff" }}
-              activeDot={{ r: 7 }}
-              isAnimationActive={true}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+
+      <div className="w-full overflow-x-auto">
+        <div className="min-w-[500px] h-[200px] sm:h-[250px] md:h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={moodData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis
+                domain={[1, 5]}
+                ticks={[1, 2, 3, 4, 5]}
+                tickFormatter={(value) => moodLabelMap[value] || ""}
+                label={{
+                  value: "Mood",
+                  angle: -90,
+                  position: "insideLeft",
+                }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Line
+                type="monotone"
+                dataKey="moodRating"
+                name="Mood Rating"
+                stroke="#0ea5e9"
+                strokeWidth={2}
+                dot={{ r: 4, strokeWidth: 1.5, fill: "#fff" }}
+                activeDot={{ r: 6 }}
+                isAnimationActive={true}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
 };
 
 export default WeeklyMoodChart;
+
 
