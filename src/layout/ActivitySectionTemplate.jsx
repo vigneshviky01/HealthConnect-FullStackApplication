@@ -183,7 +183,7 @@ const validateForm = (data) => {
 
   const fetchTodayActivities = async () => {
     try {
-      const res = await axios.get(`http://localhost:8080/api/activities/by-date?${today}`, {
+      const res = await axios.get(`http://localhost:8080/api/activities?startDate=${today}&endDate=${today}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setActivityLogs(res.data);
