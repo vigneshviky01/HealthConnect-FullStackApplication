@@ -105,13 +105,13 @@ const applyFilter = () => {
           </label>
           <button
             onClick={applyFilter}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+            className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
           >
             Filter
           </button>
           <button
             onClick={resetFilter}
-            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
+            className="cursor-pointer bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md"
           >
             Reset
           </button>
@@ -119,7 +119,7 @@ const applyFilter = () => {
 
         <button
           onClick={() => setAscending(!ascending)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+          className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
         >
           Sort by Date {ascending ? "▼" : "▲"}
         </button>
@@ -166,7 +166,7 @@ const applyFilter = () => {
               className={`px-4 py-2 rounded-md ${
                 currentPage === 1
                   ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
               }`}
             >
               Prev
@@ -180,7 +180,7 @@ const applyFilter = () => {
               className={`px-4 py-2 rounded-md ${
                 currentPage === totalPages
                   ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
               }`}
             >
               Next

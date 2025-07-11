@@ -4,6 +4,7 @@ import Navbar from "../../section/Navbar";
 import { useUser } from "../../context/UserContext";
 import Welcome from "../../section/dashboard/Welcome";
 import DashboardNav from "../../section/dashboard/DashboardNav";
+import BMICard from "../../component/dashboard/BMICard";
 
 import AnalysisDashboardLayout from "../../layout/AnalysisDashBoardLayout";
 import WeeklySleepChart from "../../component/week chart/weeklySleepChart";
@@ -69,11 +70,17 @@ const Dashboard = () => {
     <>
       <Welcome name={userInfo.name} />
       <DashboardNav />
+      {userInfo && (
+  <BMICard
+    height={userInfo.height}
+    weight={userInfo.weight}
+  />
+)}
        <div className="flex justify-start mt-4">
         <select
           value={selectedAnalysis}
           onChange={(e) => setSelectedAnalysis(e.target.value)}
-          className="border px-4 py-2 rounded-lg shadow-md text-gray-700 bg-blue-600 text-white text-bold mt-2"
+          className="border px-4 py-2 rounded-lg shadow-md  bg-blue-600 text-white text-bold mt-2"
         >
           <option value="Sleep">Sleep Graph</option>
           <option value="Activity">Activity Graph</option>

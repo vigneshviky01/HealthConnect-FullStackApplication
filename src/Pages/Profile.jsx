@@ -4,7 +4,7 @@ import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
-
+import BackButtonCommon from "../component/BackButtonCommon";
 const EditableField = ({
   label,
   keyName,
@@ -260,7 +260,8 @@ export default function Profile() {
   }
 
   return (
-    <div className="py-10 min-h-screen flex items-center justify-center px-4 bg-[linear-gradient(200deg,_#0066EE_60%,_#9383FB_100%)]">
+    <div className="py-10 relative min-h-screen flex items-center justify-center px-4 bg-[linear-gradient(200deg,_#0066EE_60%,_#9383FB_100%)]">
+     <BackButtonCommon />
       <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-md mt-6 sm:mt-12">
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-[#0066EE]/10 rounded-full flex items-center justify-center mx-auto mb-4">
