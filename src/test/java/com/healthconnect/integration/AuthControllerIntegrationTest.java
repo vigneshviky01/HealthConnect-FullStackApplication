@@ -2,6 +2,7 @@ package com.healthconnect.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.healthconnect.entity.User;
+import com.healthconnect.entity.UserProfile;
 import com.healthconnect.repository.UserRepository;
 import com.healthconnect.transfer.request.LoginRequest;
 import com.healthconnect.transfer.request.SignupRequest;
@@ -47,11 +48,6 @@ class AuthControllerIntegrationTest {
         testUser.setUsername("authuser");
         testUser.setEmail("auth@example.com");
         testUser.setPassword(passwordEncoder.encode(TEST_PASSWORD));
-        testUser.setUsername("Auth User");
-        testUser.set("Male");
-        testUser.set(30);
-        testUser.setWeight(75.0);
-        testUser.setHeight(180.0);
         userRepository.save(testUser);
     }
 
@@ -62,7 +58,7 @@ class AuthControllerIntegrationTest {
         request.setEmail("newuser@example.com");
         request.setPassword("Password123");
         request.setName("New User");
-        request.setGender("Female");
+        request.setGender(UserProfile.Gender.FEMALE);
         request.setAge(25);
         request.setWeight(65.0);
         request.setHeight(165.0);
@@ -86,7 +82,7 @@ class AuthControllerIntegrationTest {
         request.setEmail("different@example.com");
         request.setPassword("Password123");
         request.setName("Duplicate User");
-        request.setGender("Male");
+        request.setGender(UserProfile.Gender.MALE);
         request.setAge(35);
         request.setWeight(80.0);
         request.setHeight(175.0);
@@ -105,7 +101,7 @@ class AuthControllerIntegrationTest {
         request.setEmail("auth@example.com"); // Already exists
         request.setPassword("Password123");
         request.setName("Duplicate Email User");
-        request.setGender("Female");
+        request.setGender(UserProfile.Gender.FEMALE);
         request.setAge(28);
         request.setWeight(70.0);
         request.setHeight(170.0);

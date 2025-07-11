@@ -5,7 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// Response class for aggregated health metrics data
+/**
+ * Response class for weekly aggregated health metrics.
+ * Fields may be null if filtered out or if no data is present for the period.
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,7 +22,6 @@ public class MetricsResponse {
     private Double avgSleepQuality;
     private Double totalWaterIntake;
     private Double avgMoodRating;
-    private String timeFrame; // "WEEK" or "MONTH"
     private String startDate;
     private String endDate;
 }

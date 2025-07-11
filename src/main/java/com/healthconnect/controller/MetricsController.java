@@ -1,5 +1,21 @@
 package com.healthconnect.controller;
 
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.healthconnect.config.service.UserDetailsImpl;
 import com.healthconnect.entity.User;
 import com.healthconnect.service.MetricsService;
@@ -8,15 +24,6 @@ import com.healthconnect.transfer.response.MetricsResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/api/metrics")
@@ -31,41 +38,24 @@ public class MetricsController {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    @Operation(summary = "Get weekly metrics for the authenticated user")
-    @GetMapping("/weekly")
-    public ResponseEntity<MetricsResponse> getWeeklyMetrics() {
+    @Operation(summary = "Get weekly aggregated metrics for a selected month (for graphing)")
+    @GetMapping("/monthly/graph")
+    public ResponseEntity<List<MetricsResponse>> getMonthlyGraphMetrics(
+            @RequestParam(value = "yearMonth", required = false) String yearMonthStr,
+            @RequestParam(value = "metrics", required = false) String metricsParam) {
         User currentUser = getCurrentUser();
-        MetricsResponse metrics = metricsService.getWeeklyMetrics(currentUser);
-        return ResponseEntity.ok(metrics);
-    }
-
-    @Operation(summary = "Get monthly metrics for the authenticated user")
-    @GetMapping("/monthly")
-    public ResponseEntity<MetricsResponse> getMonthlyMetrics() {
-        User currentUser = getCurrentUser();
-        MetricsResponse metrics = metricsService.getMonthlyMetrics(currentUser);
-        return ResponseEntity.ok(metrics);
-    }
-
-    @Operation(summary = "Get metrics for a custom date range for the authenticated user")
-    @GetMapping("/custom")
-    public ResponseEntity<MetricsResponse> getCustomRangeMetrics(
-            @RequestParam("startDate") String startDateStr,
-            @RequestParam("endDate") String endDateStr) {
-        
-        User currentUser = getCurrentUser();
-        LocalDate startDate = LocalDate.parse(startDateStr, DATE_FORMATTER);
-        LocalDate endDate = LocalDate.parse(endDateStr, DATE_FORMATTER);
-        
-        // Validate date range
-        if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("Start date must be before or equal to end date");
+        Set<String> metricsFilter = null;
+        if (metricsParam != null && !metricsParam.isEmpty()) {
+            metricsFilter = new HashSet<>(Arrays.asList(metricsParam.split(",")));
         }
-        
-        MetricsResponse metrics = metricsService.getMetricsForDateRange(
-                currentUser, startDate, endDate, "CUSTOM");
-        
-        return ResponseEntity.ok(metrics);
+        List<MetricsResponse> result;
+        if (yearMonthStr != null && !yearMonthStr.isEmpty()) {
+            YearMonth yearMonth = YearMonth.parse(yearMonthStr);
+            result = metricsService.getFourWeekMetricsForMonth(currentUser, yearMonth, metricsFilter);
+        } else {
+            result = metricsService.getFourWeekMetricsFromToday(currentUser, metricsFilter);
+        }
+        return ResponseEntity.ok(result);
     }
 
     //Helper method to get the current authenticated user
