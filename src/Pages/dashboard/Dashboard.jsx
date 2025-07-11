@@ -80,7 +80,7 @@ const Dashboard = () => {
         <select
           value={selectedAnalysis}
           onChange={(e) => setSelectedAnalysis(e.target.value)}
-          className="border px-4 py-2 rounded-lg shadow-md text-gray-700 bg-blue-600 text-white text-bold mt-2"
+          className="border px-4 py-2 rounded-lg shadow-md  bg-blue-600 text-white text-bold mt-2"
         >
           <option value="Sleep">Sleep Graph</option>
           <option value="Activity">Activity Graph</option>
