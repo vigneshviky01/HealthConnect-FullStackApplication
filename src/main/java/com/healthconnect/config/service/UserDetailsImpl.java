@@ -31,7 +31,7 @@ public class UserDetailsImpl implements UserDetails {
 		this.authorities = authorities;
 	}
 
-//	Build() -> Converts User entity to a Spring UserDetailsImpl object.
+//	Build() -> Converts User entity(DB) to a Spring UserDetailsImpl object i.e. authenticated principal.
 	public static UserDetailsImpl build(User user) {
 		List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 

@@ -12,13 +12,13 @@ import com.healthconnect.entity.User;
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
 	List<Activity> findByUser(User user);
-	List<Activity> findByUserAndWorkoutType(User user, String workoutType);
-	List<Activity> findByUserAndActivityDateBetween(User user, LocalDate startDate, LocalDate endDate);
-	List<Activity> findByUserAndActivityDateBetweenAndWorkoutType(User user, LocalDate startDate, LocalDate endDate, String workoutType);
+
 	List<Activity> findByUserAndActivityDate(User user, LocalDate date);
-	
+
+	List<Activity> findByUserAndActivityDateBetween(User user, LocalDate startDate, LocalDate endDate);
+
 	// Aggregated Data
-	
+
 	@Query("SELECT SUM(a.stepsCount) FROM Activity a WHERE a.user = :user AND a.activityDate BETWEEN :start AND :end")
 	Long getTotalSteps(User user, LocalDate start, LocalDate end);
 

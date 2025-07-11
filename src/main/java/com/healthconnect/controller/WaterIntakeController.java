@@ -47,14 +47,22 @@ public class WaterIntakeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Get all water intake records for the authenticated user, optionally filtered by date range")
+    @Operation(summary = "Get all water intake records for the authenticated user")
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<WaterIntakeResponse>> getAllWaterIntakes(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+    public ResponseEntity<List<WaterIntakeResponse>> getAllWaterIntakes() {
         Long userId = getCurrentUserId();
-        List<WaterIntakeResponse> waterIntakes = waterIntakeService.getAllWaterIntakes(userId, startDate, endDate);
+        List<WaterIntakeResponse> waterIntakes = waterIntakeService.getAllWaterIntakes(userId, null);
+        return ResponseEntity.ok(waterIntakes);
+    }
+
+    @Operation(summary = "Get water intake records for the authenticated user for a specific date")
+    @GetMapping("/by-date")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<WaterIntakeResponse>> getWaterIntakesByDate(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate intakeDate) {
+        Long userId = getCurrentUserId();
+        List<WaterIntakeResponse> waterIntakes = waterIntakeService.getAllWaterIntakes(userId, intakeDate);
         return ResponseEntity.ok(waterIntakes);
     }
 
@@ -81,6 +89,27 @@ public class WaterIntakeController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @Operation(summary = "Add amount of water to an existing water intake record by ID")
+    @PostMapping("/{id}/add")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<WaterIntakeResponse> addWaterToExistingRecord(
+            @PathVariable("id") Long waterIntakeId,
+            @RequestBody WaterIntakeRequest request) {
+        Long userId = getCurrentUserId();
+        WaterIntakeResponse waterIntake = waterIntakeService.addWaterToExistingRecord(waterIntakeId, userId, request.getAmountLiters());
+        return ResponseEntity.ok(waterIntake);
+    }
+
+    @Operation(summary = "Get water intake redcords for the authenticate user where amount is greater than specified value")
+    @GetMapping("/by-amount")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<WaterIntakeResponse>> getWaterIntakesByMinAmount(
+            @RequestParam Double intakeAmount) {
+        Long userId = getCurrentUserId();
+        List<WaterIntakeResponse> waterIntakes = waterIntakeService.getWaterIntakesByMinAmount(userId, intakeAmount);
+        return ResponseEntity.ok(waterIntakes);
     }
 
     private Long getCurrentUserId() {

@@ -37,6 +37,19 @@ public class WaterIntakeService {
         return WaterIntakeResponse.fromWaterIntake(saved);
     }
 
+    @Transactional
+    public WaterIntakeResponse addWaterToExistingRecord(Long waterIntakeId, Long userId, Double amountToAdd) {
+        Optional<WaterIntake> waterIntakeOpt = waterIntakeRepository.findById(waterIntakeId);
+        if (waterIntakeOpt.isPresent() && waterIntakeOpt.get().getUser().getId().equals(userId)) {
+            WaterIntake waterIntake = waterIntakeOpt.get();
+            waterIntake.setAmountLiters(waterIntake.getAmountLiters() + amountToAdd);
+            WaterIntake updated = waterIntakeRepository.save(waterIntake);
+            return WaterIntakeResponse.fromWaterIntake(updated);
+        } else {
+            throw new RuntimeException("Water intake record not found or does not belong to user");
+        }
+    }
+
     public Optional<WaterIntakeResponse> getWaterIntakeById(Long waterIntakeId, Long userId) {
         Optional<WaterIntake> waterIntakeOpt = waterIntakeRepository.findById(waterIntakeId);
         if (waterIntakeOpt.isPresent() && waterIntakeOpt.get().getUser().getId().equals(userId)) {
@@ -45,15 +58,24 @@ public class WaterIntakeService {
         return Optional.empty();
     }
 
-    public List<WaterIntakeResponse> getAllWaterIntakes(Long userId, LocalDate startDate, LocalDate endDate) {
+    public List<WaterIntakeResponse> getAllWaterIntakes(Long userId, LocalDate intakeDate) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         List<WaterIntake> waterIntakes;
-        if (startDate != null && endDate != null) {
-            waterIntakes = waterIntakeRepository.findByUserAndIntakeDateBetween(user, startDate, endDate);
+        if (intakeDate != null) {
+            waterIntakes = waterIntakeRepository.findByUserAndIntakeDate(user, intakeDate);
         } else {
             waterIntakes = waterIntakeRepository.findByUser(user);
         }
+        return waterIntakes.stream()
+                .map(WaterIntakeResponse::fromWaterIntake)
+                .collect(Collectors.toList());
+    }
+
+    public List<WaterIntakeResponse> getWaterIntakesByMinAmount(Long userId, Double intakeAmount) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        List<WaterIntake> waterIntakes = waterIntakeRepository.findByUserAndAmountLitersGreaterThan(user, intakeAmount);
         return waterIntakes.stream()
                 .map(WaterIntakeResponse::fromWaterIntake)
                 .collect(Collectors.toList());

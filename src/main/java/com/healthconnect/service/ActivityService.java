@@ -26,18 +26,14 @@ public class ActivityService {
     @Autowired
     private UserRepository userRepository;
     
-    public List<ActivityResponse> getAllActivities(Long userId, LocalDate startDate, LocalDate endDate, String workoutType, String sort) {
+    public List<ActivityResponse> getAllActivities(Long userId, LocalDate startDate, LocalDate endDate, String sort) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
         List<Activity> activities;
         
-        if (startDate != null && endDate != null && workoutType != null) {
-            activities = activityRepository.findByUserAndActivityDateBetweenAndWorkoutType(user, startDate, endDate, workoutType);
-        } else if (startDate != null && endDate != null) {
+        if (startDate != null && endDate != null) {
             activities = activityRepository.findByUserAndActivityDateBetween(user, startDate, endDate);
-        } else if (workoutType != null) {
-            activities = activityRepository.findByUserAndWorkoutType(user, workoutType);
         } else {
             activities = activityRepository.findByUser(user);
         }
@@ -54,22 +50,29 @@ public class ActivityService {
                 .collect(Collectors.toList());
     }
     
-	public List<ActivityResponse> getActivitiesByDate(Long userId, LocalDate date, String sort) {
-		User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
-		
-		List<Activity> activities = activityRepository.findByUserAndActivityDate(user, date);
-		
-		String direction = (sort == null || !sort.equalsIgnoreCase("asc")) ? "desc" : "asc";
+    // Flexible filter method for activities
+    public List<ActivityResponse> getActivitiesByFilter(Long userId, LocalDate startDate, LocalDate endDate, String workoutType, Integer minSteps, Integer minCalories, Double minDistance, Integer minDuration, String sort) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        List<Activity> activities = activityRepository.findByUser(user);
+        // Filter in-memory for simplicity; for large datasets, use Specifications or QueryDSL
+        activities = activities.stream()
+                .filter(a -> (startDate == null || !a.getActivityDate().isBefore(startDate)))
+                .filter(a -> (endDate == null || !a.getActivityDate().isAfter(endDate)))
+                .filter(a -> (workoutType == null || a.getWorkoutType().equalsIgnoreCase(workoutType)))
+                .filter(a -> (minSteps == null || (a.getStepsCount() != null && a.getStepsCount() >= minSteps)))
+                .filter(a -> (minCalories == null || (a.getCaloriesBurned() != null && a.getCaloriesBurned() >= minCalories)))
+                .filter(a -> (minDistance == null || (a.getDistanceKm() != null && a.getDistanceKm() >= minDistance)))
+                .filter(a -> (minDuration == null || (a.getWorkoutDurationMinutes() != null && a.getWorkoutDurationMinutes() >= minDuration)))
+                .toList();
+        String direction = (sort == null || !sort.equalsIgnoreCase("asc")) ? "desc" : "asc";
         activities.sort((a, b) -> {
             int compare = a.getActivityDate().compareTo(b.getActivityDate());
             return direction.equals("asc") ? compare : -compare;
         });
-        
-        return activities.stream()
-                .map(ActivityResponse::fromActivity)
-                .collect(Collectors.toList());
-	}
-	
+        return activities.stream().map(ActivityResponse::fromActivity).collect(Collectors.toList());
+    }
+    
     // Get a specific activity by ID
     public Optional<ActivityResponse> getActivityById(Long activityId, Long userId) {
         Optional<Activity> activityOpt = activityRepository.findById(activityId);

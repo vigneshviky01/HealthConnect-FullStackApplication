@@ -38,33 +38,37 @@ public class ActivityController {
 	@Autowired
 	private ActivityService activityService;
 
-	@Operation(summary = "Get all activity records for the authenticated user, optionally filtered by date range and workout type")
+	@Operation(summary = "Get all activity records for the authenticated user, optionally filtered by date range.")
 	@GetMapping
 	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<ActivityResponse>> getAllActivities(
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-			@RequestParam(required = false) String workoutType, @RequestParam(defaultValue = "desc") String sort) {
-		Long userId = getCurrentUserId();
-		List<ActivityResponse> activities = activityService.getAllActivities(userId, startDate, endDate, workoutType,
-				sort);
-
-		return ResponseEntity.ok(activities);
-	}
-
-	@Operation(summary = "Get activity records for a specific date for the authenticated user")
-	@GetMapping("/by-date")
-	@PreAuthorize("isAuthenticated()")
-	public ResponseEntity<List<ActivityResponse>> getActivitiesByDate(
-			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
 			@RequestParam(defaultValue = "desc") String sort) {
-
-		LocalDate queryDate = (date != null) ? date : LocalDate.now();
 		Long userId = getCurrentUserId();
-		List<ActivityResponse> activities = activityService.getActivitiesByDate(userId, queryDate, sort);
+		List<ActivityResponse> activities = activityService.getAllActivities(userId, startDate, endDate, sort);
 
 		return ResponseEntity.ok(activities);
 	}
+
+	@Operation(summary = "Get activity records for the authenticated user with flexible filtering options")
+	@GetMapping("/filter")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<List<ActivityResponse>> getActivitiesByFilter(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) String workoutType,
+            @RequestParam(required = false) Integer minSteps,
+            @RequestParam(required = false) Integer minCalories,
+            @RequestParam(required = false) Double minDistance,
+            @RequestParam(required = false) Integer minDuration,
+            @RequestParam(defaultValue = "desc") String sort
+    ) {
+        Long userId = getCurrentUserId();
+        List<ActivityResponse> activities = activityService.getActivitiesByFilter(
+                userId, startDate, endDate, workoutType, minSteps, minCalories, minDistance, minDuration, sort);
+        return ResponseEntity.ok(activities);
+    }
 
 	@Operation(summary = "Get a specific activity record by ID for the authenticated user")
 	@GetMapping("/{id}")

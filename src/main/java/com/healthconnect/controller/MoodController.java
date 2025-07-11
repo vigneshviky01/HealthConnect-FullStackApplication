@@ -83,6 +83,26 @@ public class MoodController {
         }
     }
 
+    @Operation(summary = "Get mood records for the authenticated user for a specific date")
+    @GetMapping("/by-date")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<MoodResponse>> getMoodsByDate(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate moodDate) {
+        Long userId = getCurrentUserId();
+        List<MoodResponse> moods = moodService.getMoodsByDate(userId, moodDate);
+        return ResponseEntity.ok(moods);
+    }
+
+    @Operation(summary = "Get mood records for the authenticated user with rating greater than specified value")
+    @GetMapping("/by-rating")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<MoodResponse>> getMoodsByMinRating(
+            @RequestParam Integer minMoodRating) {
+        Long userId = getCurrentUserId();
+        List<MoodResponse> moods = moodService.getMoodsByMinRating(userId, minMoodRating);
+        return ResponseEntity.ok(moods);
+    }
+
     private Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
