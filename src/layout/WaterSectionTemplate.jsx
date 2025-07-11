@@ -8,6 +8,8 @@ import EmptyDataPrompt from "../component/EmptyDataPrompt";
 import { useUser } from "../context/UserContext";
 import { toast } from "react-toastify";
 import ConfirmDialog from "../component/ConfirmDialog";
+import { BarChart3, FileX2 } from "lucide-react";
+
 const WaterSectionTemplate = ({ title, formComponent: FormComponent }) => {
   const token = sessionStorage.getItem("authToken");
   const today = new Date().toISOString().slice(0, 10);
@@ -125,6 +127,9 @@ const performDelete = async () => {
 };
 
  
+useEffect(() => {
+  fetchWaterLogs();
+}, []);
 
   const hasTodayWaterLogs =
     waterLogs && waterLogs.some((entry) => entry.intakeDate === today);
@@ -207,8 +212,8 @@ const previousLogs = waterLogs.filter((w) => w.intakeDate !== today);
         )}
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow">
-        <div className="flex gap-2">
+      <div className="bg-white sm:p-4 rounded-lg shadow">
+        <div className="p-4 flex gap-2">
           <button
             onClick={() => setChartOrHistory("chart")}
             className={`px-4 py-2 rounded-md ${
@@ -236,7 +241,13 @@ const previousLogs = waterLogs.filter((w) => w.intakeDate !== today);
             <h3 className="font-semibold text-lg mb-2 text-blue-600">
               Overview
             </h3>
-            {waterLogs.length >0 ? <WaterChart data={waterLogs} /> : <div className="text-center">No data</div> }
+            {waterLogs.length >0 ? <WaterChart data={waterLogs} /> : <div className="w-full bg-yellow-50 text-yellow-700 p-4 rounded-md shadow-sm border border-yellow-300 flex items-start gap-3">
+                <BarChart3 className="w-6 h-6 mt-1 text-yellow-700" />
+                <div>
+                  <p className="font-medium">No Previous data available for chart</p>
+
+                </div>
+              </div> }
           </div>
         ) : (
           <div className="p-4">
@@ -244,7 +255,13 @@ const previousLogs = waterLogs.filter((w) => w.intakeDate !== today);
               Previous Entries
             </h3>
             <div className="w-full bg-gray-100 p-4 rounded-md shadow-sm">
-              {previousLogs.length > 0 ? <PreviousWaterTable data={previousLogs} /> : <div className="text-center">No data</div>}
+              {previousLogs.length > 0 ? <PreviousWaterTable data={previousLogs} /> :  <div className="w-full bg-yellow-50 text-yellow-700 p-4 rounded-md shadow-sm border border-yellow-300 flex items-start gap-3">
+              <FileX2 className="w-6 h-6 mt-1 text-yellow-700" />
+              <div>
+                <p className="font-medium">No Previous records found</p>
+
+              </div>
+            </div>}
               
             </div>
           </div>

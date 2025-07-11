@@ -101,7 +101,7 @@ const SleepForm = ({ formData, onChange }) => {
           onChange={onChange}
           placeholder="e.g. 3"
           className="input-field-style"
-          min="0"
+          min="1"
           max="5"
           required
         />

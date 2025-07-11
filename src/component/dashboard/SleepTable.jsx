@@ -55,7 +55,7 @@ const SleepTable = ({ data, onEdit, onDelete }) => {
               </td>
               <td className="p-2">{formatTime(entry.startTime)}</td>
               <td className="p-2">{formatTime(entry.endTime)}</td>
-              <td className="p-2">{entry.qualityRating} / 10</td>
+              <td className="p-2">{entry.qualityRating} / 5</td>
               <td className="p-2">
                 {entry.notes ? (
                   <span title={entry.notes} className="inline-flex justify-center items-center cursor-pointer">

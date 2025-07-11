@@ -7,6 +7,8 @@ import PreviousActivityTable from "../component/dashboard/PreviousActivityTable"
 import { BarChart3, FileX2 } from "lucide-react";
 import EmptyDataPrompt from "../component/EmptyDataPrompt";
 import ConfirmDialog from "../component/ConfirmDialog";
+import { toast } from "react-toastify";
+
 const ActivitySectionTemplate = ({
   title,
   formComponent: FormComponent,
@@ -34,54 +36,132 @@ const ActivitySectionTemplate = ({
   const [activityToDelete, setActivityToDelete] = useState(null);
 
 
+const validateForm = (data) => {
+  const errors = [];
+
+  if (data.caloriesBurned === "" || isNaN(data.caloriesBurned) || Number(data.caloriesBurned) < 1) {
+    errors.push("Calories burned is required and must be a non-negative number greater than 0.");
+  }
+
+  if (data.workoutDurationMinutes === "" || isNaN(data.workoutDurationMinutes) || Number(data.workoutDurationMinutes) < 1) {
+    errors.push("Workout duration is required and must be a non-negative number greater than 0.");
+  }
+
+  return errors;
+};
 
   const handleChange = (e) => {
     const updater = editData ? setEditData : setFormData;
     updater((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
 
-    try {
-      await axios.post(
-        "http://localhost:8080/api/activities",
-        { ...formData, activityDate: today },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setFormData({ stepsCount: 0, caloriesBurned: 0, workoutType: "", workoutDurationMinutes: 0, distanceKm: 0, notes: "" });
-      fetchTodayActivities();
-      setShowForm(false);
-    } catch (err) {
-      console.error("Error logging activity", err);
-    }
-  };
+  //   try {
+  //     await axios.post(
+  //       "http://localhost:8080/api/activities",
+  //       { ...formData, activityDate: today },
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
+  //     setFormData({ stepsCount: 0, caloriesBurned: 0, workoutType: "", workoutDurationMinutes: 0, distanceKm: 0, notes: "" });
+  //     fetchTodayActivities();
+  //     setShowForm(false);
+  //   } catch (err) {
+  //     console.error("Error logging activity", err);
+  //   }
+  // };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const errors = validateForm(formData);
+  if (errors.length > 0) {
+    errors.forEach((err) => toast.error(err));
+    return;
+  }
+
+  try {
+    await axios.post(
+      "http://localhost:8080/api/activities",
+      { ...formData, activityDate: today },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setFormData({
+      stepsCount: 0,
+      caloriesBurned: 0,
+      workoutType: "",
+      workoutDurationMinutes: 0,
+      distanceKm: 0,
+      notes: ""
+    });
+    fetchTodayActivities();
+    setShowForm(false);
+    toast.success("Activity logged successfully!");
+  } catch (err) {
+    console.error("Error logging activity", err);
+    toast.error("Something went wrong while saving activity.");
+  }
+};
+
+  // const handleUpdate = async (e) => {
+
+  //   e.preventDefault();
+  //   try {
+  //     const payload = {
+  //       stepsCount: editData.stepsCount,
+  //       caloriesBurned: editData.caloriesBurned,
+  //       workoutType: editData.workoutType,
+  //       workoutDurationMinutes: editData.workoutDurationMinutes,
+  //       distanceKm: editData.distanceKm,
+  //       notes: editData.notes,
+  //       activityDate: today
+  //     };
+  //     console.log(editData);
+  //     await axios.put(
+  //       `http://localhost:8080/api/activities/${editData.id}`,
+  //       payload,
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
+  //     setEditData(null);
+  //     fetchTodayActivities();
+  //   } catch (err) {
+  //     console.error("Error updating activity", err);
+  //   }
+  // };
 
   const handleUpdate = async (e) => {
+  e.preventDefault();
 
-    e.preventDefault();
-    try {
-      const payload = {
-        stepsCount: editData.stepsCount,
-        caloriesBurned: editData.caloriesBurned,
-        workoutType: editData.workoutType,
-        workoutDurationMinutes: editData.workoutDurationMinutes,
-        distanceKm: editData.distanceKm,
-        notes: editData.notes,
-        activityDate: today
-      };
-      console.log(editData);
-      await axios.put(
-        `http://localhost:8080/api/activities/${editData.id}`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setEditData(null);
-      fetchTodayActivities();
-    } catch (err) {
-      console.error("Error updating activity", err);
-    }
-  };
+  const errors = validateForm(editData);
+  if (errors.length > 0) {
+    errors.forEach((err) => toast.error(err));
+    return;
+  }
+
+  try {
+    const payload = {
+      stepsCount: editData.stepsCount,
+      caloriesBurned: editData.caloriesBurned,
+      workoutType: editData.workoutType,
+      workoutDurationMinutes: editData.workoutDurationMinutes,
+      distanceKm: editData.distanceKm,
+      notes: editData.notes,
+      activityDate: today
+    };
+    await axios.put(
+      `http://localhost:8080/api/activities/${editData.id}`,
+      payload,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setEditData(null);
+    fetchTodayActivities();
+    toast.success("Activity updated successfully!");
+  } catch (err) {
+    console.error("Error updating activity", err);
+    toast.error("Failed to update activity.");
+  }
+};
 
   const confirmDelete = async () => {
     if (!activityToDelete) return;
@@ -91,6 +171,7 @@ const ActivitySectionTemplate = ({
         headers: { Authorization: `Bearer ${token}` },
         data: { date: today },
       });
+       toast.success("sleep entry deleted successfully!");
       fetchTodayActivities();
     } catch (err) {
       console.error("Error deleting activity", err);
@@ -189,8 +270,8 @@ const ActivitySectionTemplate = ({
         />
       </div>
 
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-        <div className="flex flex-wrap gap-2 mb-4">
+      <div className="bg-white sm:p-4  rounded-lg shadow">
+        <div className="p-4 flex flex-wrap gap-2 ">
           <button
             onClick={() => setChartOrHistory("chart")}
             className={`px-4 py-2 rounded-md text-sm ${chartOrHistory === "chart"
@@ -207,7 +288,7 @@ const ActivitySectionTemplate = ({
               : "bg-gray-300 text-gray-700"
               }`}
           >
-            Previous Activity
+            Previous Logs
           </button>
         </div>
 

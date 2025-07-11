@@ -1,8 +1,9 @@
-
 import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { BarChart3, FileX2 } from "lucide-react";
 import EmptyDataPrompt from "../component/EmptyDataPrompt";
+import { toast } from "react-toastify";
+
 const SleepSectionTemplate = ({
   title,
   formComponent: FormComponent,
@@ -27,29 +28,40 @@ const SleepSectionTemplate = ({
     updater((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-
   return (
     <div className="p-4 sm:p-6 mt-5 max-w-4xl mx-auto space-y-6">
       <h2 className="text-xl sm:text-2xl font-bold text-blue-600">{title}</h2>
 
       <div className="bg-white p-4 rounded-lg shadow space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-          <h3 className="text-lg sm:text-xl font-semibold text-blue-600">Today's Sleep</h3>
-          {todaySleepData.length === 0 && (
+          <h3 className="text-lg sm:text-xl font-semibold text-blue-600">
+            Yesterday's Sleep
+          </h3>
             <button
-              onClick={() => setShowForm(true)}
-              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+              onClick={() => {
+                if (todaySleepData.length !== 0) {
+                  toast.info(
+                    "You've already logged your sleep info today. You can edit or delete it."
+                  );
+                } else {
+                  setShowForm(true);
+                }
+              }}
+               className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+              todaySleepData.length !== 0
+                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }`}
             >
               <Plus size={20} /> Add Sleep
             </button>
-          )}
-
+          
         </div>
 
         {loading ? (
           <p className="text-center text-blue-600">Loading...</p>
         ) : todaySleepData.length === 0 ? (
-        <EmptyDataPrompt message="Add your sleep Record for today"/>
+          <EmptyDataPrompt message="Add your sleep Record for yesterday" />
         ) : (
           tableComponent
         )}
@@ -117,52 +129,55 @@ const SleepSectionTemplate = ({
       )}
 
       {/* Chart / History Section */}
-      <div className="bg-white p-4 rounded-lg shadow space-y-4">
-        <div className="flex flex-wrap gap-2">
+      <div className="bg-white sm:p-4 rounded-lg shadow">
+        <div className="p-4 flex flex-wrap gap-2">
           <button
             onClick={() => setView("chart")}
-            className={`px-4 py-2 rounded-md ${view === "chart"
-              ? "bg-gray-700 text-white"
-              : "bg-gray-300 text-gray-700"
-              }`}
+            className={`px-4 py-2 rounded-md ${
+              view === "chart"
+                ? "bg-gray-700 text-white"
+                : "bg-gray-300 text-gray-700"
+            }`}
           >
             Chart
           </button>
           <button
             onClick={() => setView("history")}
-            className={`px-4 py-2 rounded-md ${view === "history"
-              ? "bg-gray-700 text-white"
-              : "bg-gray-300 text-gray-700"
-              }`}
+            className={`px-4 py-2 rounded-md ${
+              view === "history"
+                ? "bg-gray-700 text-white"
+                : "bg-gray-300 text-gray-700"
+            }`}
           >
-            Previous Sleep
+            Previous Logs
           </button>
         </div>
 
         <div className="p-2 sm:p-4">
           {view === "chart" ? (
-            records.length > 0 ?
-              chartComponent :
+            records.length > 0 ? (
+              chartComponent
+            ) : (
               <div className="w-full bg-yellow-50 text-yellow-700 p-4 rounded-md shadow-sm border border-yellow-300 flex items-start gap-3">
                 <BarChart3 className="w-6 h-6 mt-1 text-yellow-700" />
                 <div>
-                  <p className="font-medium">No Previous data available for chart</p>
-
+                  <p className="font-medium">
+                    No Previous data available for chart
+                  </p>
                 </div>
               </div>
+            )
           ) : loading ? (
             <p className="text-blue-600">Loading...</p>
-          ) : (
-            records.length > 0 ? 
+          ) : records.length > 0 ? (
             <div className="w-full bg-gray-100 p-4 rounded-md shadow-sm">
-            {previousTable }
+              {previousTable}
             </div>
-            : 
-           <div className="w-full bg-yellow-50 text-yellow-700 p-4 rounded-md shadow-sm border border-yellow-300 flex items-start gap-3">
+          ) : (
+            <div className="w-full bg-yellow-50 text-yellow-700 p-4 rounded-md shadow-sm border border-yellow-300 flex items-start gap-3">
               <FileX2 className="w-6 h-6 mt-1 text-yellow-700" />
               <div>
                 <p className="font-medium">No Previous records found</p>
-
               </div>
             </div>
           )}

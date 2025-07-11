@@ -34,7 +34,7 @@ const MoodChart = ({ data }) => {
   return (
     <div className="w-full bg-white p-4 rounded-lg shadow-sm overflow-x-auto">
       <h3 className="text-lg font-semibold mb-4 text-blue-600">
-        Mood Trend (Last 30 Days)
+        Mood Trend (Last 7 Days)
       </h3>
       <div className="min-w-[400px]" style={{ height: "280px" }}>
         <ResponsiveContainer width="100%" height="100%">
