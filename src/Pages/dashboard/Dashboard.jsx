@@ -19,7 +19,7 @@ const Dashboard = () => {
   const { userInfo, setUserInfo } = useUser();
   const [selectedAnalysis, setSelectedAnalysis] = useState("Activity");
   const token = sessionStorage.getItem("authToken");
-  console.log(token);
+  // console.log(token);
        useEffect(() => {
       axios
         .get("http://localhost:8080/api/users/profile", {
@@ -28,7 +28,7 @@ const Dashboard = () => {
         .then((res) => setUserInfo(res.data))
         .catch((err) => console.error("Failed to fetch user data", err));
     }, []);
-    console.log(userInfo);
+    // console.log(userInfo);
 
     if (!userInfo) {
       return <div className="text-center mt-20">Loading user info...</div>;

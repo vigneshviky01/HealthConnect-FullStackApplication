@@ -20,121 +20,120 @@ const WaterSectionTemplate = ({ title, formComponent: FormComponent }) => {
   const [loading, setLoading] = useState(true);
   const [chartOrHistory, setChartOrHistory] = useState("chart");
   const [showForm, setShowForm] = useState(false);
-const [showConfirm, setShowConfirm] = useState(false);
-const [deleteId, setDeleteId] = useState(null);
-
- 
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const fetchWaterLogs = async () => {
- 
-  try {
-    const res = await axios.get(
-      `http://localhost:8080/api/water`,
-      {
+    try {
+      const res = await axios.get(`http://localhost:8080/api/water`, {
         headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+      });
 
-    // ✅ Ensure it's always an array
-    console.log(res.data)
-    const logs = Array.isArray(res.data) ? res.data : [];
-    setWaterLogs(logs);
-  } catch (err) {
-    console.error("Error fetching water logs", err);
-    setWaterLogs([]); // ✅ fallback on error
-  } finally {
-    setLoading(false);
-  }
-};
-
-
- const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  const amountToValidate = editData ? editData.amount : formData.amount;
-
-  if (!amountToValidate || parseFloat(amountToValidate) <= 0) {
-    toast.error("Please enter a valid amount greater than 0");
-    return;
-  }
-
-  try {
-    const payload = {
-      intakeDate: today,
-      amountLiters: parseFloat(editData?.amount || formData.amount),
-    };
-
-    if (editData) {
-      await axios.put(
-        `http://localhost:8080/api/water/${editData.id}`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setEditData(null);
-    } else {
-      await axios.post(
-        `http://localhost:8080/api/water`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setFormData({ amount: "" });
+     
+      const logs = Array.isArray(res.data) ? res.data : [];
+      setWaterLogs(logs);
+    } catch (err) {
+      console.error("Error fetching water logs", err);
+      setWaterLogs([]); // ✅ fallback on error
+    } finally {
+      setLoading(false);
     }
-
-    await fetchWaterLogs();
-    setShowForm(false);
-  } catch (err) {
-    console.error("Error submitting water intake", err);
-  }
-};
-
-
-//   const handleDelete = async (id) => {
-
-//     try {
-//       await axios.delete(
-//   `http://localhost:8080/api/water/${id}`,
-//   {
-//     headers: { Authorization: `Bearer ${token}` },
-//   }
-// );
-
-//       fetchWaterLogs();
-//     } catch (err) {
-//       console.error("Error deleting water entry", err);
-//     }
-//   };
-const confirmDelete = (id) => {
-  setDeleteId(id);
-  setShowConfirm(true);
-};
-
-const performDelete = async () => {
-  if (!deleteId) return;
-
-  try {
-    await axios.delete(`http://localhost:8080/api/water/${deleteId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    toast.success("Water entry deleted successfully!");
-    fetchWaterLogs();
-  } catch (err) {
-    console.error("Error deleting water entry", err);
-  } finally {
-    setShowConfirm(false);
-    setDeleteId(null);
-  }
-};
-
- 
-useEffect(() => {
-  fetchWaterLogs();
-}, []);
+  };
 
   const hasTodayWaterLogs =
     waterLogs && waterLogs.some((entry) => entry.intakeDate === today);
+ const todayWaterLogs =
+  waterLogs?.find((entry) => entry.intakeDate === today) || null;
 
-const previousLogs = waterLogs.filter((w) => w.intakeDate !== today);
+
+  const previousLogs = waterLogs.filter((w) => w.intakeDate !== today);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const amountToValidate = editData ? editData.amount : formData.amount;
+
+    if (!amountToValidate || parseFloat(amountToValidate) <= 0) {
+      toast.error("Please enter a valid amount greater than 0");
+      return;
+    }
+
+    try {
+      const payload = {
+        intakeDate: today,
+        amountLiters: parseFloat(editData?.amount || formData.amount),
+      };
+
+      if (editData) {
+        await axios.put(
+          `http://localhost:8080/api/water/${editData.id}`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setEditData(null);
+      } else {
+       
+        if(hasTodayWaterLogs){
+            await axios.post(`http://localhost:8080/api/water/${todayWaterLogs.id}/add`, payload, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        }
+        else{
+          await axios.post(`http://localhost:8080/api/water`, payload, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        }
+        setFormData({ amount: "" });
+      }
+
+      await fetchWaterLogs();
+      setShowForm(false);
+    } catch (err) {
+      console.error("Error submitting water intake", err);
+    }
+  };
+
+  //   const handleDelete = async (id) => {
+
+  //     try {
+  //       await axios.delete(
+  //   `http://localhost:8080/api/water/${id}`,
+  //   {
+  //     headers: { Authorization: `Bearer ${token}` },
+  //   }
+  // );
+
+  //       fetchWaterLogs();
+  //     } catch (err) {
+  //       console.error("Error deleting water entry", err);
+  //     }
+  //   };
+  const confirmDelete = (id) => {
+    setDeleteId(id);
+    setShowConfirm(true);
+  };
+
+  const performDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      await axios.delete(`http://localhost:8080/api/water/${deleteId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      toast.success("Water entry deleted successfully!");
+      fetchWaterLogs();
+    } catch (err) {
+      console.error("Error deleting water entry", err);
+    } finally {
+      setShowConfirm(false);
+      setDeleteId(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchWaterLogs();
+  }, []);
 
   return (
     <div className="p-6 mt-5 max-w-4xl mx-auto space-y-6">
@@ -241,13 +240,18 @@ const previousLogs = waterLogs.filter((w) => w.intakeDate !== today);
             <h3 className="font-semibold text-lg mb-2 text-blue-600">
               Overview
             </h3>
-            {waterLogs.length >0 ? <WaterChart data={waterLogs} /> : <div className="w-full bg-yellow-50 text-yellow-700 p-4 rounded-md shadow-sm border border-yellow-300 flex items-start gap-3">
+            {waterLogs.length > 0 ? (
+              <WaterChart data={waterLogs} />
+            ) : (
+              <div className="w-full bg-yellow-50 text-yellow-700 p-4 rounded-md shadow-sm border border-yellow-300 flex items-start gap-3">
                 <BarChart3 className="w-6 h-6 mt-1 text-yellow-700" />
                 <div>
-                  <p className="font-medium">No Previous data available for chart</p>
-
+                  <p className="font-medium">
+                    No Previous data available for chart
+                  </p>
                 </div>
-              </div> }
+              </div>
+            )}
           </div>
         ) : (
           <div className="p-4">
@@ -255,28 +259,29 @@ const previousLogs = waterLogs.filter((w) => w.intakeDate !== today);
               Previous Entries
             </h3>
             <div className="w-full bg-gray-100 p-4 rounded-md shadow-sm">
-              {previousLogs.length > 0 ? <PreviousWaterTable data={previousLogs} /> :  <div className="w-full bg-yellow-50 text-yellow-700 p-4 rounded-md shadow-sm border border-yellow-300 flex items-start gap-3">
-              <FileX2 className="w-6 h-6 mt-1 text-yellow-700" />
-              <div>
-                <p className="font-medium">No Previous records found</p>
-
-              </div>
-            </div>}
-              
+              {previousLogs.length > 0 ? (
+                <PreviousWaterTable data={previousLogs} />
+              ) : (
+                <div className="w-full bg-yellow-50 text-yellow-700 p-4 rounded-md shadow-sm border border-yellow-300 flex items-start gap-3">
+                  <FileX2 className="w-6 h-6 mt-1 text-yellow-700" />
+                  <div>
+                    <p className="font-medium">No Previous records found</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
       </div>
       <ConfirmDialog
-  isOpen={showConfirm}
-  message="Are you sure you want to delete this water entry?"
-  onConfirm={performDelete}
-  onCancel={() => {
-    setShowConfirm(false);
-    setDeleteId(null);
-  }}
-/>
-
+        isOpen={showConfirm}
+        message="Are you sure you want to delete this water entry?"
+        onConfirm={performDelete}
+        onCancel={() => {
+          setShowConfirm(false);
+          setDeleteId(null);
+        }}
+      />
     </div>
   );
 };
