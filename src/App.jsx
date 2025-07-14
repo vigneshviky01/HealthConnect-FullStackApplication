@@ -14,6 +14,7 @@ import MoodTracker from "./Pages/dashboard/MoodTracker";
 import { PrivateRoute } from "./component/LoginRoutes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import NotFoundPage from "./Pages/404Page";
 function App() {
   return (
     <>
@@ -23,14 +24,15 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route  path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
           <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
-            <Route index element={<Dashboard />} /> {/* /dashboard */}
+            <Route index element={<Dashboard />} /> 
             <Route path="activity" element={<ActivityTracker />} />
             <Route path="sleep" element={<SleepTracker />} />
             <Route path="water" element={<WaterTracker />} />
             <Route path="mood" element={<MoodTracker />} />
           </Route>
-          <Route exact path="/login" element={<Login />} />
-          <Route exact path="/register" element={<Register />} />
+          <Route  path="/login" element={<Login />} />
+          <Route  path="/register" element={<Register />} />
+          <Route  path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </>
