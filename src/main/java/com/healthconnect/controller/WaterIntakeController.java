@@ -1,34 +1,43 @@
 package com.healthconnect.controller;
 
-import com.healthconnect.config.service.UserDetailsImpl;
-import com.healthconnect.transfer.request.WaterIntakeRequest;
-import com.healthconnect.transfer.response.MessageResponse;
-import com.healthconnect.transfer.response.WaterIntakeResponse;
-import com.healthconnect.service.WaterIntakeService;
-import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-import java.util.List;
+import com.healthconnect.service.WaterIntakeService;
+import com.healthconnect.transfer.request.WaterIntakeRequest;
+import com.healthconnect.transfer.response.MessageResponse;
+import com.healthconnect.transfer.response.WaterIntakeResponse;
+
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/water")
 @Tag(name = "Water Intake", description = "Endpoints for managing user water intake records")
-public class WaterIntakeController {
+public class WaterIntakeController extends BaseController {
 
     @Autowired
     private WaterIntakeService waterIntakeService;
 
     @Operation(summary = "Create a new water intake record for the authenticated user")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<WaterIntakeResponse> createWaterIntake(@Valid @RequestBody WaterIntakeRequest request) {
@@ -38,6 +47,7 @@ public class WaterIntakeController {
     }
 
     @Operation(summary = "Get a specific water intake record by ID for the authenticated user")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getWaterIntake(@PathVariable("id") Long waterIntakeId) {
@@ -48,6 +58,7 @@ public class WaterIntakeController {
     }
 
     @Operation(summary = "Get all water intake records for the authenticated user")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<WaterIntakeResponse>> getAllWaterIntakes() {
@@ -57,6 +68,7 @@ public class WaterIntakeController {
     }
 
     @Operation(summary = "Get water intake records for the authenticated user for a specific date")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/by-date")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<WaterIntakeResponse>> getWaterIntakesByDate(
@@ -67,6 +79,7 @@ public class WaterIntakeController {
     }
 
     @Operation(summary = "Update a specific water intake record by ID for the authenticated user")
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateWaterIntake(
@@ -79,6 +92,7 @@ public class WaterIntakeController {
     }
 
     @Operation(summary = "Delete a specific water intake record by ID for the authenticated user")
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteWaterIntake(@PathVariable("id") Long waterIntakeId) {
@@ -92,6 +106,7 @@ public class WaterIntakeController {
     }
 
     @Operation(summary = "Add amount of water to an existing water intake record by ID")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{id}/add")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<WaterIntakeResponse> addWaterToExistingRecord(
@@ -102,19 +117,6 @@ public class WaterIntakeController {
         return ResponseEntity.ok(waterIntake);
     }
 
-    @Operation(summary = "Get water intake redcords for the authenticate user where amount is greater than specified value")
-    @GetMapping("/by-amount")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<WaterIntakeResponse>> getWaterIntakesByMinAmount(
-            @RequestParam Double intakeAmount) {
-        Long userId = getCurrentUserId();
-        List<WaterIntakeResponse> waterIntakes = waterIntakeService.getWaterIntakesByMinAmount(userId, intakeAmount);
-        return ResponseEntity.ok(waterIntakes);
-    }
 
-    private Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return userDetails.getId();
-    }
+
 }

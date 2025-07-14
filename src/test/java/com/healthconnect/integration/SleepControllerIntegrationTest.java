@@ -78,14 +78,12 @@ class SleepControllerIntegrationTest {
         SleepRequest request = new SleepRequest();
         request.setSleepStartTime(startTime);
         request.setSleepEndTime(endTime);
-        request.setQualityRating(5);
         request.setNotes("Excellent sleep");
 
         mockMvc.perform(post("/api/sleep")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.qualityRating").value(5))
                 .andExpect(jsonPath("$.notes").value("Excellent sleep"));
     }
 

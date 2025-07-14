@@ -72,14 +72,14 @@ public class WaterIntakeService {
                 .collect(Collectors.toList());
     }
 
-    public List<WaterIntakeResponse> getWaterIntakesByMinAmount(Long userId, Double intakeAmount) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        List<WaterIntake> waterIntakes = waterIntakeRepository.findByUserAndAmountLitersGreaterThan(user, intakeAmount);
-        return waterIntakes.stream()
-                .map(WaterIntakeResponse::fromWaterIntake)
-                .collect(Collectors.toList());
-    }
+//    public List<WaterIntakeResponse> getWaterIntakesByMinAmount(Long userId, Double intakeAmount) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//        List<WaterIntake> waterIntakes = waterIntakeRepository.findByUserAndAmountLitersGreaterThan(user, intakeAmount);
+//        return waterIntakes.stream()
+//                .map(WaterIntakeResponse::fromWaterIntake)
+//                .collect(Collectors.toList());
+//    }
 
     @Transactional
     public Optional<WaterIntakeResponse> updateWaterIntake(Long waterIntakeId, Long userId, @Valid WaterIntakeRequest request) {

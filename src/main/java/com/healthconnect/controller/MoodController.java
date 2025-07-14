@@ -1,34 +1,43 @@
 package com.healthconnect.controller;
 
-import com.healthconnect.config.service.UserDetailsImpl;
-import com.healthconnect.transfer.request.MoodRequest;
-import com.healthconnect.transfer.response.MessageResponse;
-import com.healthconnect.transfer.response.MoodResponse;
-import com.healthconnect.service.MoodService;
-import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-import java.util.List;
+import com.healthconnect.service.MoodService;
+import com.healthconnect.transfer.request.MoodRequest;
+import com.healthconnect.transfer.response.MessageResponse;
+import com.healthconnect.transfer.response.MoodResponse;
+
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/mood")
 @Tag(name = "Mood", description = "Endpoints for managing user mood records")
-public class MoodController {
+public class MoodController extends BaseController {
 
     @Autowired
     private MoodService moodService;
 
     @Operation(summary = "Create a new mood record for the authenticated user")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<MoodResponse> createMood(@Valid @RequestBody MoodRequest request) {
@@ -38,6 +47,7 @@ public class MoodController {
     }
 
     @Operation(summary = "Get a specific mood record by ID for the authenticated user")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getMood(@PathVariable("id") Long moodId) {
@@ -48,6 +58,7 @@ public class MoodController {
     }
 
     @Operation(summary = "Get all mood records for the authenticated user, optionally filtered by date range")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<MoodResponse>> getAllMoods(
@@ -59,6 +70,7 @@ public class MoodController {
     }
 
     @Operation(summary = "Update a specific mood record by ID for the authenticated user")
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateMood(
@@ -71,6 +83,7 @@ public class MoodController {
     }
 
     @Operation(summary = "Delete a specific mood record by ID for the authenticated user")
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteMood(@PathVariable("id") Long moodId) {
@@ -84,6 +97,7 @@ public class MoodController {
     }
 
     @Operation(summary = "Get mood records for the authenticated user for a specific date")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/by-date")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<MoodResponse>> getMoodsByDate(
@@ -93,19 +107,6 @@ public class MoodController {
         return ResponseEntity.ok(moods);
     }
 
-    @Operation(summary = "Get mood records for the authenticated user with rating greater than specified value")
-    @GetMapping("/by-rating")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<MoodResponse>> getMoodsByMinRating(
-            @RequestParam Integer minMoodRating) {
-        Long userId = getCurrentUserId();
-        List<MoodResponse> moods = moodService.getMoodsByMinRating(userId, minMoodRating);
-        return ResponseEntity.ok(moods);
-    }
 
-    private Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return userDetails.getId();
-    }
+
 }

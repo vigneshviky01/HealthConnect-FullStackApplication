@@ -2,6 +2,7 @@ package com.healthconnect.entity;
 
 import java.time.LocalDateTime;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -43,6 +44,7 @@ public class Sleep {
 	@Min(1)
 	@Max(5)
 	@Column(name = "quality_rating")
+	@Schema(description = "The quality of sleeping")
 	private Integer qualityRating;
 	
 	@Column(name = "note", length = 500)

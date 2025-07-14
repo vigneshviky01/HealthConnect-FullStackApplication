@@ -24,11 +24,12 @@ import com.healthconnect.transfer.response.MetricsResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/api/metrics")
 @Tag(name = "Statistics", description = "All the health metrics' statistics")
-public class MetricsController {
+public class MetricsController extends BaseController {
 
     @Autowired
     private MetricsService metricsService;
@@ -39,6 +40,7 @@ public class MetricsController {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Operation(summary = "Get weekly aggregated metrics for a selected month (for graphing)")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/monthly/graph")
     public ResponseEntity<List<MetricsResponse>> getMonthlyGraphMetrics(
             @RequestParam(value = "yearMonth", required = false) String yearMonthStr,

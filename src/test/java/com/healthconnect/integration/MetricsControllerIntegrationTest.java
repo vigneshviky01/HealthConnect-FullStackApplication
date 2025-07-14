@@ -44,22 +44,17 @@ class MetricsControllerIntegrationTest {
     @Autowired
     private MoodRepository moodRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     private User testUser;
     private UserDetailsImpl userDetails;
 
     @BeforeEach
     void setUp() {
-        // Create and save a test user
         testUser = new User();
         testUser.setUsername("metricsuser");
         testUser.setEmail("metrics@example.com");
         testUser.setPassword("password");
         userRepository.save(testUser);
 
-        // Create test data for metrics
         createTestActivity();
         createTestSleep();
         createTestWaterIntake();
@@ -73,8 +68,8 @@ class MetricsControllerIntegrationTest {
     }
 
     private void createTestActivity() {
-        // Create activity records for the past week
-        for (int i = 0; i < 7; i++) {
+        // Create activity records for the past 28 days
+        for (int i = 0; i < 28; i++) {
             Activity activity = new Activity();
             activity.setUser(testUser);
             activity.setActivityDate(LocalDate.now().minusDays(i));
@@ -88,8 +83,8 @@ class MetricsControllerIntegrationTest {
     }
 
     private void createTestSleep() {
-        // Create sleep records for the past week
-        for (int i = 0; i < 7; i++) {
+        // Create sleep records for the past 28 days
+        for (int i = 0; i < 28; i++) {
             Sleep sleep = new Sleep();
             sleep.setUser(testUser);
             sleep.setSleepStartTime(LocalDateTime.now().minusDays(i + 1).withHour(22).withMinute(0));
@@ -100,8 +95,8 @@ class MetricsControllerIntegrationTest {
     }
 
     private void createTestWaterIntake() {
-        // Create water intake records for the past week
-        for (int i = 0; i < 7; i++) {
+        // Create water intake records for the past 28 days
+        for (int i = 0; i < 28; i++) {
             WaterIntake waterIntake = new WaterIntake();
             waterIntake.setUser(testUser);
             waterIntake.setIntakeDate(LocalDate.now().minusDays(i));
@@ -111,8 +106,8 @@ class MetricsControllerIntegrationTest {
     }
 
     private void createTestMood() {
-        // Create mood records for the past week
-        for (int i = 0; i < 7; i++) {
+        // Create mood records for the past 28 days
+        for (int i = 0; i < 28; i++) {
             Mood mood = new Mood();
             mood.setUser(testUser);
             mood.setMoodDate(LocalDate.now().minusDays(i));
@@ -122,78 +117,59 @@ class MetricsControllerIntegrationTest {
     }
 
     @Test
-    void testGetWeeklyMetrics() throws Exception {
-        mockMvc.perform(get("/api/metrics/weekly")
+    void testGetFourWeekMetrics_Default() throws Exception {
+        mockMvc.perform(get("/api/metrics/monthly/graph")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.timeFrame").value("WEEKLY"))
-                .andExpect(jsonPath("$.avgStepsCount").isNumber())
-                .andExpect(jsonPath("$.avgCaloriesBurned").isNumber())
-                .andExpect(jsonPath("$.avgDistanceKm").isNumber())
-                .andExpect(jsonPath("$.avgWorkoutMinutes").isNumber())
-                .andExpect(jsonPath("$.avgSleepHours").isNumber())
-                .andExpect(jsonPath("$.avgSleepQuality").isNumber())
-                .andExpect(jsonPath("$.avgWaterIntakeLiters").isNumber())
-                .andExpect(jsonPath("$.avgMoodRating").isNumber());
+                .andExpect(jsonPath("$", org.hamcrest.Matchers.hasSize(4)))
+                .andExpect(jsonPath("$[0].startDate").exists())
+                .andExpect(jsonPath("$[0].endDate").exists())
+                .andExpect(jsonPath("$[0].totalSteps").exists())
+                .andExpect(jsonPath("$[0].totalCalories").exists())
+                .andExpect(jsonPath("$[0].totalDistance").exists())
+                .andExpect(jsonPath("$[0].totalWorkoutMinutes").exists())
+                .andExpect(jsonPath("$[0].totalSleepHours").exists())
+                .andExpect(jsonPath("$[0].avgSleepQuality").exists())
+                .andExpect(jsonPath("$[0].totalWaterIntake").exists())
+                .andExpect(jsonPath("$[0].avgMoodRating").exists());
     }
 
     @Test
-    void testGetMonthlyMetrics() throws Exception {
-        mockMvc.perform(get("/api/metrics/monthly")
+    void testGetFourWeekMetrics_YearMonth() throws Exception {
+        String yearMonth = LocalDate.now().getYear() + "-" + String.format("%02d", LocalDate.now().getMonthValue());
+        mockMvc.perform(get("/api/metrics/monthly/graph")
+                .param("yearMonth", yearMonth)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.timeFrame").value("MONTHLY"))
-                .andExpect(jsonPath("$.avgStepsCount").isNumber())
-                .andExpect(jsonPath("$.avgCaloriesBurned").isNumber())
-                .andExpect(jsonPath("$.avgDistanceKm").isNumber())
-                .andExpect(jsonPath("$.avgWorkoutMinutes").isNumber())
-                .andExpect(jsonPath("$.avgSleepHours").isNumber())
-                .andExpect(jsonPath("$.avgSleepQuality").isNumber())
-                .andExpect(jsonPath("$.avgWaterIntakeLiters").isNumber())
-                .andExpect(jsonPath("$.avgMoodRating").isNumber());
+                .andExpect(jsonPath("$", org.hamcrest.Matchers.hasSize(4)))
+                .andExpect(jsonPath("$[0].startDate").exists())
+                .andExpect(jsonPath("$[0].endDate").exists());
     }
 
     @Test
-    void testGetCustomRangeMetrics() throws Exception {
-        String startDate = LocalDate.now().minusDays(5).toString();
-        String endDate = LocalDate.now().toString();
-
-        mockMvc.perform(get("/api/metrics/custom")
-                .param("startDate", startDate)
-                .param("endDate", endDate)
+    void testGetFourWeekMetrics_MetricsFilter() throws Exception {
+        mockMvc.perform(get("/api/metrics/monthly/graph")
+                .param("metrics", "totalSteps,avgMoodRating")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.timeFrame").value("CUSTOM"))
-                .andExpect(jsonPath("$.startDate").value(startDate))
-                .andExpect(jsonPath("$.endDate").value(endDate))
-                .andExpect(jsonPath("$.avgStepsCount").isNumber())
-                .andExpect(jsonPath("$.avgCaloriesBurned").isNumber())
-                .andExpect(jsonPath("$.avgDistanceKm").isNumber())
-                .andExpect(jsonPath("$.avgWorkoutMinutes").isNumber())
-                .andExpect(jsonPath("$.avgSleepHours").isNumber())
-                .andExpect(jsonPath("$.avgSleepQuality").isNumber())
-                .andExpect(jsonPath("$.avgWaterIntakeLiters").isNumber())
-                .andExpect(jsonPath("$.avgMoodRating").isNumber());
+                .andExpect(jsonPath("$", org.hamcrest.Matchers.hasSize(4)))
+                .andExpect(jsonPath("$[0].totalSteps").exists())
+                .andExpect(jsonPath("$[0].avgMoodRating").exists())
+                .andExpect(jsonPath("$[0].totalCalories").doesNotExist())
+                .andExpect(jsonPath("$[0].totalDistance").doesNotExist());
     }
 
     @Test
-    void testGetCustomRangeMetricsWithInvalidDateRange() throws Exception {
-        String startDate = LocalDate.now().toString();
-        String endDate = LocalDate.now().minusDays(5).toString(); // End date before start date
-
-        mockMvc.perform(get("/api/metrics/custom")
-                .param("startDate", startDate)
-                .param("endDate", endDate)
+    void testGetFourWeekMetrics_YearMonthAndMetrics() throws Exception {
+        String yearMonth = LocalDate.now().getYear() + "-" + String.format("%02d", LocalDate.now().getMonthValue());
+        mockMvc.perform(get("/api/metrics/monthly/graph")
+                .param("yearMonth", yearMonth)
+                .param("metrics", "totalSleepHours,avgSleepQuality")
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void testGetCustomRangeMetricsWithMissingParameters() throws Exception {
-        mockMvc.perform(get("/api/metrics/custom")
-                .param("startDate", LocalDate.now().minusDays(5).toString())
-                // Missing endDate parameter
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", org.hamcrest.Matchers.hasSize(4)))
+                .andExpect(jsonPath("$[0].totalSleepHours").exists())
+                .andExpect(jsonPath("$[0].avgSleepQuality").exists())
+                .andExpect(jsonPath("$[0].totalSteps").doesNotExist());
     }
 }

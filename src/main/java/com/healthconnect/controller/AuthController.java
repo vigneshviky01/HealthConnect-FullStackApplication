@@ -1,16 +1,6 @@
 package com.healthconnect.controller;
 
 
-import com.healthconnect.config.security.JwtUtils;
-import com.healthconnect.config.service.UserDetailsImpl;
-import com.healthconnect.entity.User;
-import com.healthconnect.service.UserService;
-import com.healthconnect.transfer.request.LoginRequest;
-import com.healthconnect.transfer.request.SignupRequest;
-import com.healthconnect.transfer.response.JwtResponse;
-import com.healthconnect.transfer.response.MessageResponse;
-
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,11 +8,23 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletRequest;
+import com.healthconnect.config.security.JwtUtils;
+import com.healthconnect.config.service.UserDetailsImpl;
+import com.healthconnect.service.UserService;
+import com.healthconnect.transfer.request.LoginRequest;
+import com.healthconnect.transfer.request.SignupRequest;
+import com.healthconnect.transfer.response.JwtResponse;
+import com.healthconnect.transfer.response.MessageResponse;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -40,17 +42,21 @@ public class AuthController {
 	@Operation(summary = "Authenticate user and return JWT token")
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(
-						loginRequest.getUsernameOrEmail(), loginRequest.getPassword()));
+		try {
+			Authentication authentication = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(
+							loginRequest.getUsernameOrEmail(), loginRequest.getPassword()));
 
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		String jwt = jwtUtils.generateJwtToken(authentication);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			String jwt = jwtUtils.generateJwtToken(authentication);
 
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+			UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-		return ResponseEntity
-				.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail()));
+			return ResponseEntity
+					.ok(new JwtResponse(jwt, "Bearer", userDetails.getId(), userDetails.getUsername(), userDetails.getEmail()));
+		} catch (Exception ex) {
+			return ResponseEntity.status(401).body(new MessageResponse("Invalid username/email or password."));
+		}
 	}
 
 	@Operation(summary = "Register a new user account")

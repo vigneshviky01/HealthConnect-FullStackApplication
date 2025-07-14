@@ -18,9 +18,6 @@ public interface SleepRepository extends JpaRepository<Sleep, Long> {
 
 	List<Sleep> findByUserAndQualityRatingGreaterThanEqual(User user, Integer qualityRating);
 
-	List<Sleep> findByUserAndSleepStartTimeBetweenAndQualityRatingGreaterThanEqual(User user, LocalDateTime start,
-			LocalDateTime end, Integer qualityRating);
-
 	// Find sleep records for a specific date (ignoring time)
 	@Query("SELECT s FROM Sleep s WHERE s.user = :user AND CAST(s.sleepStartTime AS LocalDate) = :date")
 	List<Sleep> findByUserAndDate(@Param("user") User user, @Param("date") LocalDate date);

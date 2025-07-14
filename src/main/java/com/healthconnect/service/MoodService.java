@@ -69,14 +69,14 @@ public class MoodService {
                 .collect(Collectors.toList());
     }
 
-    public List<MoodResponse> getMoodsByMinRating(Long userId, Integer minMoodRating) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        List<Mood> moods = moodRepository.findByUserAndMoodRatingGreaterThanEqual(user, minMoodRating);
-        return moods.stream()
-                .map(MoodResponse::fromMood)
-                .collect(Collectors.toList());
-    }
+//    public List<MoodResponse> getMoodsByMinRating(Long userId, Integer minMoodRating) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//        List<Mood> moods = moodRepository.findByUserAndMoodRatingGreaterThanEqual(user, minMoodRating);
+//        return moods.stream()
+//                .map(MoodResponse::fromMood)
+//                .collect(Collectors.toList());
+//    }
 
     @Transactional
     public Optional<MoodResponse> updateMood(Long moodId, Long userId, @Valid MoodRequest request) {

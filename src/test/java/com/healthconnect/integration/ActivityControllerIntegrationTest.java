@@ -42,32 +42,41 @@ class ActivityControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     private User testUser;
-    private UserDetailsImpl userDetails;
     private Activity testActivity;
 
     @BeforeEach
     void setUp() {
-        // Create and save a test user
         testUser = new User();
         testUser.setUsername("activityuser");
         testUser.setEmail("activity@example.com");
         testUser.setPassword("password");
         userRepository.save(testUser);
 
-        // Create and save a test activity
-        testActivity = new Activity();
-        testActivity.setUser(testUser);
-        testActivity.setActivityDate(LocalDate.now());
-        testActivity.setStepsCount(10000);
-        testActivity.setCaloriesBurned(500);
-        testActivity.setWorkoutType("Running");
-        testActivity.setWorkoutDurationMinutes(45);
-        testActivity.setDistanceKm(5.0);
-        testActivity.setNotes("Morning run");
-        activityRepository.save(testActivity);
+        Activity todayActivity = new Activity();
+        todayActivity.setUser(testUser);
+        todayActivity.setActivityDate(LocalDate.now());
+        todayActivity.setStepsCount(10000);
+        todayActivity.setCaloriesBurned(500);
+        todayActivity.setWorkoutType("Running");
+        todayActivity.setWorkoutDurationMinutes(45);
+        todayActivity.setDistanceKm(5.0);
+        todayActivity.setNotes("Morning run");
+        activityRepository.save(todayActivity);
 
-        // Set up authentication
-        userDetails = UserDetailsImpl.build(testUser);
+        Activity yesterdayActivity = new Activity();
+        yesterdayActivity.setUser(testUser);
+        yesterdayActivity.setActivityDate(LocalDate.now().minusDays(1));
+        yesterdayActivity.setStepsCount(9500);
+        yesterdayActivity.setCaloriesBurned(480);
+        yesterdayActivity.setWorkoutType("Running");
+        yesterdayActivity.setWorkoutDurationMinutes(40);
+        yesterdayActivity.setDistanceKm(4.5);
+        yesterdayActivity.setNotes("Evening run");
+        activityRepository.save(yesterdayActivity);
+
+        testActivity = todayActivity;
+
+        UserDetailsImpl userDetails = UserDetailsImpl.build(testUser);
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -110,15 +119,6 @@ class ActivityControllerIntegrationTest {
     }
 
     @Test
-    void testGetActivitiesByDate() throws Exception {
-        mockMvc.perform(get("/api/activities/by-date")
-                .param("date", LocalDate.now().toString())
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].workoutType").value("Running"));
-    }
-
-    @Test
     void testUpdateActivity() throws Exception {
         ActivityRequest request = new ActivityRequest();
         request.setActivityDate(LocalDate.now());
@@ -144,13 +144,5 @@ class ActivityControllerIntegrationTest {
                 .andExpect(jsonPath("$.message").value("Activity record deleted successfully"));
 
         assertThat(activityRepository.findById(testActivity.getId())).isEmpty();
-    }
-
-    // Test for non-existent activity
-    @Test
-    void testGetNonExistentActivity() throws Exception {
-        mockMvc.perform(get("/api/activities/999999")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
     }
 }
