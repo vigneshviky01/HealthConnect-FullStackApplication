@@ -8,35 +8,35 @@ const HowItWorks = () => {
       title: "Create Your Profile",
       description: "Sign up securely and set up your personal health profile with basic information like age, weight, and health goals.",
       icon: User,
-      iconBg: "bg-blue-500"
+      iconBg: "bg-blue-200"
     },
     {
       id: 2,
       title: "Track Daily Activities",
       description: "Log your daily activities including steps, workouts, calories burned, and exercise duration.",
       icon: Activity,
-      iconBg: "bg-green-500"
+      iconBg: "bg-blue-200"
     },
     {
       id: 3,
       title: "Monitor Sleep Patterns",
       description: "Record your sleep start time, end time, quality rating, and add personal notes about your rest.",
       icon: Moon,
-      iconBg: "bg-purple-500"
+      iconBg: "bg-blue-200"
     },
     {
       id: 4,
       title: "Log Water & Mood",
       description: "Track your daily water intake and mood levels to understand the connection between hydration and well-being.",
       icon: Droplets,
-      iconBg: "bg-cyan-500"
+      iconBg: "bg-blue-200"
     },
     {
       id: 5,
       title: "Visualize Your Progress",
       description: "View your health trends through interactive charts and graphs that show your progress over time.",
       icon: BarChart3,
-      iconBg: "bg-orange-500"
+      iconBg: "bg-blue-200"
     }
   ];
 
@@ -62,7 +62,7 @@ const HowItWorks = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-start space-x-4">
                 <div className={`w-14 h-14 rounded-2xl ${step.iconBg} flex items-center justify-center flex-shrink-0`}>
-                  <Icon className="w-7 h-7 text-white" />
+                  <Icon className="w-7 h-7 text-blue-600" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
