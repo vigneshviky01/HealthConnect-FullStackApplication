@@ -14,7 +14,7 @@ Make sure you have java 17
 In MySQL, create a db: healthconnect by running:
 create database healthconnect;
 
-Also, replace the spring.datasource.password field with your actual MySQL DB Password file: backend\src\main\resources\application.properties
+Also, replace the spring.datasource.username & spring.datasource.password fields with your actual MySQL DB Username and Password in file: backend\src\main\resources\application.properties
 
 Then in terminal:
 cd backend
